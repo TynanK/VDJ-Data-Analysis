@@ -14,6 +14,8 @@
 
 # Sorry it's so complicated.
 
+# WARNING: TEMPORARILY HARD-CODED TO CUT OFF PLOTS ABOVE X=200S
+
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -30,6 +32,7 @@ def plotMSD(stats, fig, ax, colors, statsName, intLabel):
     ax.set_xlabel("Time [s]")
     ax.set_ylabel(u"MSD [\u03BCm^2]")
     ax.set_title("Mean-Squared Displacement vs Time")
+    ax.set_xlim(2, 200)
     fig.tight_layout()
 
     return fig, ax
