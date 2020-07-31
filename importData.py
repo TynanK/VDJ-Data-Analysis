@@ -4,6 +4,8 @@
 
 # Script to import experimental VDJ data from CSV files, formatted by Megan Aubrey
 
+# Output data format for each time: x y z t flag
+
 import numpy as np
 import sys, csv
 import filenameManipulations as fiMa

@@ -4,6 +4,7 @@
 
 I'll detail the filename formats my scripts expect as inputs and save as outputs here.
 Note: [A/B] means A or B, not "[A/B]"
+[A-B] means the sequence from A to B, inclusive
 {A} means this is optional
 Any time I use * more than once in the same script, it should be the same.
 
@@ -13,8 +14,13 @@ Raw data: R1_*.csv, G1_*.csv, G2_*.csv
 
 importData.py:
     dependencies:   none
-    inputs:         *.csv
+    inputs:         timestep *.csv
     output:         *.npy
+
+importDataSet.py:
+    dependencies:   none
+    inputs:         timestep numCells
+    output:         R1_[1-numCells].npy G1_[1-numCells].npy G2_[1-numCells].npy
 
 separations.py:
     dependencies:   importData.py
