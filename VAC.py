@@ -41,7 +41,7 @@ def singleTrajectoryAnalysis(dataFile1, dataFile2):
     corr_np = arMa.makeArray(correlations)
     np.save(outCorrelationsName, corr_np)
 
-    return stats, correlations, dts
+    return stats, corr_np, dts_np
 
 def VAC(data1, data2):
     (_,j) = data1.shape
@@ -55,7 +55,7 @@ def VAC(data1, data2):
     for a in range(lenT):
         data1index = times1.index(sharedTimes[a])
         data2index = times2.index(sharedTimes[a])
-        seps[a,0:3] = data2[data2index,0:3] - data1[data2index,0:3]
+        seps[a,0:3] = data2[data2index,0:3] - data1[data1index,0:3]
         seps[a,3] = sharedTimes[a]
         if data1[data1index,4] == 1 or data2[data2index,4] == 1:
             seps[a,4] = 1

@@ -24,27 +24,27 @@ def ensembleVAC(filenames, dataType):
     currentDir = os.getcwd()
     corr_ensemble = []
     dt_ensemble = []
-    for file1 in filenames:
-        dt_filename = currentDir + "/dt_" + file1
-        corr_filename = currentDir + "/corr_" + file1
+    for file3 in filenames:
+        dt_filename = currentDir + "/dt_" + file3
+        corr_filename = currentDir + "/corr_" + file3
         if os.path.isfile(dt_filename) and os.path.isfile(corr_filename):
             dt_data = np.load(dt_filename)
             corr_data = np.load(corr_filename)
         else:
             if dataType == 'VDJ':
-                file1 = fiMa.swapPrefix(fiMa.stripPrefix(file1), "R1_")
-                file2 = fiMa.swapPrefix(fiMa.stripPrefix(file1), "G1_")
+                file1 = fiMa.swapPrefix(fiMa.stripPrefix(file3), "R1_")
+                file2 = fiMa.swapPrefix(fiMa.stripPrefix(file3), "G1_")
             elif dataType == 'DJDJ':
-                file1 = fiMa.swapPrefix(fiMa.stripPrefix(file1), "G1_")
-                file2 = fiMa.swapPrefix(fiMa.stripPrefix(file1), "G2_")
+                file1 = fiMa.swapPrefix(fiMa.stripPrefix(file3), "G1_")
+                file2 = fiMa.swapPrefix(fiMa.stripPrefix(file3), "G2_")
             else:
                 assert (1==0), "Improper dataType"
             
             stats, corr_data, dt_data = VAC.singleTrajectoryAnalysis(file1, file2)
     
         (i,_) = corr_data.shape
-        k = dt_data
-        assert (i==k), "corr and dt data mismatch in: " + file1
+        k = dt_data.size
+        assert (i==k), "corr and dt data mismatch in: " + file3
 
         corr_list = arMa.makeListOfLists(corr_data)
         dt_list = list(dt_data)
@@ -70,6 +70,6 @@ if __name__ == "__main__":
     nums = list(range(1,numCells+1))
     filenames = []
     for a in range(len(nums)):
-        filenames.append("VAC_" + dataType + "_" + str(nums[a]) + ".py")
+        filenames.append("VAC_" + dataType + "_" + str(nums[a]) + ".npy")
     
     x = ensembleAnalysis(filenames, dataType)
