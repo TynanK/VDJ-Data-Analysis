@@ -29,20 +29,20 @@ def flagMissing(rawData):
 
 def trimMissingEnds(flaggedData):
     (i,j) = flaggedData.shape
-    if flaggedData[0,3] == 1:
+    if flaggedData[0,j-1] == 1:
         a = 1
         firstData = -1
         while firstData == -1:
-            if flaggedData[a,3] != 1:
+            if flaggedData[a,j-1] != 1:
                 firstData == a
             else:
                 a += 1
         flaggedData = flaggedData[firstData:,:]
-    if flaggedData[i-1,3] == 1:
+    if flaggedData[i-1,j-1] == 1:
         a = i-2
         lastData = -1
         while lastData == -1:
-            if flaggedData[a,3] != 1:
+            if flaggedData[a,j-1] != 1:
                 lastData = a
             else:
                 a -= 1
@@ -64,7 +64,7 @@ def interpolateMissing(flaggedData):
             startFlag = a
             b = a + 1
             endFlag = -1
-            while endFlag = -1:
+            while endFlag == -1:
                 if flaggedData[b,j-1] == 1:
                     b += 1
                 else:
@@ -86,12 +86,16 @@ def interpolate(dataRange):
     return interpolatedDataRange
 
 def stepsToTime(data, timestep):
-    (i,j) = data.shape
+    (_,j) = data.shape
     data[:,j-2] = data[:,j-2] * timestep
     return data
 
 if __name__ == "__main__":
-    assert (sys.argv==3), "Incorrect number of command line arguments. Proper syntax: python3 importData.py filename timestep"
-    filename = str(sys.argv[1])
-    timestep = float(sys.argv[2])
-    importData(filename, timestep)
+    assert (sys.argv>=3), "Incorrect number of command line arguments. Proper syntax: python3 importData.py timestep [filenames]"
+    filenames = []
+    timestep = float(sys.argv[1])
+    argc = len(sys.argv)
+    for a in range(2,argc):
+        filenames.append(str(sys.argv[a]))
+    for file1 in filenames:
+        importData(file1, timestep)
