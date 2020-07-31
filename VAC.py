@@ -98,7 +98,8 @@ def VAC(data1, data2):
     return stats, correlations, dts
 
 if __name__ == "__main__":
-    assert (len(sys.argv) == 3), "Improper inputs. Input syntax: python3 VAC.py [dataFile1] [dataFile2]"
+    argc = len(sys.argv)
+    assert (argc == 3), "Improper inputs. Input syntax: python3 VAC.py [dataFile1] [dataFile2]"
     dataFile1 = str(sys.argv[1])
     dataFile2 = str(sys.argv[2])
 

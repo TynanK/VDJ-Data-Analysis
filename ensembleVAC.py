@@ -27,7 +27,7 @@ def ensembleVAC(filenames, dataType):
     for file1 in filenames:
         dt_filename = currentDir + "/dt_" + file1
         corr_filename = currentDir + "/corr_" + file1
-        if os.pas.isfile(dt_filename) and os.path.isfile(corr_filename):
+        if os.path.isfile(dt_filename) and os.path.isfile(corr_filename):
             dt_data = np.load(dt_filename)
             corr_data = np.load(corr_filename)
         else:
@@ -42,7 +42,7 @@ def ensembleVAC(filenames, dataType):
             
             stats, corr_data, dt_data = VAC.singleTrajectoryAnalysis(file1, file2)
     
-        (i,j) = corr_data.shape
+        (i,_) = corr_data.shape
         k = dt_data
         assert (i==k), "corr and dt data mismatch in: " + file1
 
@@ -60,7 +60,8 @@ def ensembleVAC(filenames, dataType):
     return stats, corr_ensemble, dt_ensemble
 
 if __name__ == "__main__":
-    assert (len(sys.argv) == 3), "Incorrect input format. Proper syntax: python3 ensembleVAC.py [DJDJ/VDJ] [# cells]"
+    argc = len(sys.argv)
+    assert (argc == 3), "Incorrect input format. Proper syntax: python3 ensembleVAC.py [DJDJ/VDJ] [# cells]"
     dataType = str(sys.argv[1])
     numCells = int(sys.argv[2])
 
@@ -69,6 +70,6 @@ if __name__ == "__main__":
     nums = list(range(1,numCells+1))
     filenames = []
     for a in range(len(nums)):
-        filenames.append("VAC_" + dataType + "_" + str(nums(a)) + ".py")
+        filenames.append("VAC_" + dataType + "_" + str(nums[a]) + ".py")
     
     x = ensembleAnalysis(filenames, dataType)

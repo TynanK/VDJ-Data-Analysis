@@ -5,7 +5,7 @@
 # Calculate Mean-Squared Displacement vs time for an individual separation trajectory
 
 import numpy as np
-import sys, statistics
+import sys, statistics, math
 import arrayManipulations as arMa
 
 def singleTrajectoryAnalysis(filename):
@@ -19,7 +19,7 @@ def singleTrajectoryAnalysis(filename):
     return stats, sd_all, dt_all
 
 def MSD(data):
-    (i,j) = data.shape
+    (i,_) = data.shape
     sd_all = []
     dt_all = []
     for a in range(i-1):
@@ -45,6 +45,7 @@ def MSD(data):
     return stats, sd_all, dt_all
 
 if __name__ == "__main__":
-    assert (sys.argv==2), "Incorrect number of command line arguments. Proper syntax: python3 MSD.py trajectory
+    argc = len(sys.argv)
+    assert (argc==2), "Incorrect number of command line arguments. Proper syntax: python3 MSD.py trajectory"
     filename = str(sys.argv[1])
     x = singleTrajectoryAnalysis(filename)

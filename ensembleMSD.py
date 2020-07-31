@@ -35,7 +35,7 @@ def ensembleMSD(filenames):
         else:
             stats, sd_data, dt_data = MSD.singleTrajectoryAnalysis(file1)
         
-        (i,j) = sd_data.shape
+        (i,_) = sd_data.shape
         k = dt_data.size
         assert (i==k), "sd and dt data mismatch in: " + file1
 
@@ -53,7 +53,8 @@ def ensembleMSD(filenames):
     return stats, sd_ensemble, dt_ensemble
 
 if __name__ == "__main__":
-    assert (len(sys.argv) == 3), "Incorrect input format. Proper syntax: python3 ensembleMSD.py [DJDJ/VDJ] [# cells]"
+    argc = len(sys.argv)
+    assert (argc == 3), "Incorrect input format. Proper syntax: python3 ensembleMSD.py [DJDJ/VDJ] [# cells]"
     dataType = str(sys.argv[1])
     numCells = int(sys.argv[2])
 
@@ -62,6 +63,6 @@ if __name__ == "__main__":
     nums = list(range(1,numCells+1))
     filenames = []
     for a in range(len(nums)):
-        filenames.append(dataType + "_" + str(nums(a)) + ".py")
+        filenames.append(dataType + "_" + str(nums[a]) + ".py")
     
     x = ensembleAnalysis(filenames, dataType)

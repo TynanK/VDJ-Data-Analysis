@@ -55,7 +55,8 @@ def normalize(bins, binEdges):
     return bins / integral
 
 if __name__ == "__main__":
-    assert (len(sys.argv) == 3), "Improper inputs. Proper syntax: python3 separationDistribution.py [separations file] [binCount]"
+    argc = len(sys.argv)
+    assert (argc == 3), "Improper inputs. Proper syntax: python3 separationDistribution.py [separations file] [binCount]"
     filename = str(sys.argv[1])
     binCount = int(sys.argv[2])
 

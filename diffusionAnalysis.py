@@ -114,7 +114,8 @@ def fitDelta(x, w):
     return Delta
 
 if __name__ == "__main__":
-    assert (len(sys.argv) == 5), "Incorrect number of arguments. Proper syntax: python3 diffusionAnalysis.py [stats.npy] [Output Prefix] [dt_min] [dt_max]"
+    argc = len(sys.argv)
+    assert (argc == 5), "Incorrect number of arguments. Proper syntax: python3 diffusionAnalysis.py [stats.npy] [Output Prefix] [dt_min] [dt_max]"
     filename = str(sys.argv[1])
     dt_min = float(sys.argv[3])
     dt_max = float(sys.argv[4])
@@ -138,4 +139,4 @@ if __name__ == "__main__":
                 break
     
     diffStats = diffusionAnalysis(stats[mindex:maxdex,:])
-    np.save(prefix + "_" + filename)
+    np.save(prefix + "_" + filename, diffStats)
