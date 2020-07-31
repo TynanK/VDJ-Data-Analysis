@@ -5,11 +5,12 @@
 # Script to import experimental VDJ data from CSV files, formatted by Megan Aubrey
 
 import numpy as np
-import sys
+import sys, csv
 import filenameManipulations as fiMa
 
 def importData(filename, timestep):
-    rawData = np.genfromtxt(filename, delimiter=',', usecols=(0,1,2,6), missing_values='', filling_values=-1)
+    timeStepColumn = getLastColumnNumber(filename)
+    rawData = np.genfromtxt(filename, delimiter=',', usecols=(0,1,2,timeStepColumn), missing_values='', filling_values=-1)
     flaggedData = flagMissing(rawData)
     trimmedData = trimMissingEnds(flaggedData)
     interpolatedData = interpolateMissing(trimmedData)
@@ -17,6 +18,14 @@ def importData(filename, timestep):
     newName = fiMa.swapExtension(filename, 'npy')
     np.save(newName, timedData)
     return timedData
+
+def getLastColumnNumber(filename):
+    # Assumes there will be a timestep 1
+    with open(filename) as f:
+        csvreader = csv.reader(f, delimiter=",")
+        for row in csvreader:
+            return len(row) - 1
+
 
 def flagMissing(rawData):
     (i, j) = rawData.shape
@@ -91,10 +100,10 @@ def stepsToTime(data, timestep):
     return data
 
 if __name__ == "__main__":
-    assert (sys.argv>=3), "Incorrect number of command line arguments. Proper syntax: python3 importData.py timestep [filenames]"
+    argc = len(sys.argv)
+    assert (argc >= 3), "Incorrect number of command line arguments. Proper syntax: python3 importData.py timestep [filenames]"
     filenames = []
     timestep = float(sys.argv[1])
-    argc = len(sys.argv)
     for a in range(2,argc):
         filenames.append(str(sys.argv[a]))
     for file1 in filenames:
