@@ -29,13 +29,16 @@ def makeListOfLists(array):
     return data
 
 def dataInsert(data_list, key_list, datum, key):
-    if key in key_list:
-        key_ind = key_list.index(key)
-        data_list[key_ind].append(datum)
+    if key_list == [] and data_list == []:
+        return [[datum]], [key]
     else:
-        key_list.append(key)
-        data_list.append([datum])
-    return data_list, key_list
+        if key in key_list:
+            key_ind = key_list.index(key)
+            data_list[key_ind].append(datum)
+        else:
+            key_list.append(key)
+            data_list.append([datum])
+        return data_list, key_list
 
 def mergeLists(data1, key1, data2, key2):
     data3 = data1
@@ -47,7 +50,8 @@ def mergeLists(data1, key1, data2, key2):
         for b in range(len(data2[a])):
             data3, key3 = dataInsert(data3, key3, data2[a][b], key2[a])
     
-    key3_sorted = key3.sort()
+    key3_sorted = key3
+    key3_sorted.sort()
     if key3_sorted != key3:
         data3 = [x for _,x in sorted(zip(data3, key3))]
         key3 = key3_sorted

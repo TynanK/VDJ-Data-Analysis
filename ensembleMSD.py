@@ -63,6 +63,6 @@ if __name__ == "__main__":
     nums = list(range(1,numCells+1))
     filenames = []
     for a in range(len(nums)):
-        filenames.append(dataType + "_" + str(nums[a]) + ".py")
+        filenames.append(dataType + "_" + str(nums[a]) + ".npy")
     
     x = ensembleAnalysis(filenames, dataType)

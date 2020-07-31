@@ -16,7 +16,7 @@ def singleTrajectoryAnalysis(filename):
     np.save("dt_MSD_" + filename, dt_np)
     sd_np = arMa.makeArray(sd_all)
     np.save("sd_MSD_" + filename, sd_np)
-    return stats, sd_all, dt_all
+    return stats, sd_np, dt_np
 
 def MSD(data):
     (i,_) = data.shape
