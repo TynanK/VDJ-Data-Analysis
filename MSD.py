@@ -41,7 +41,8 @@ def MSD(data):
     for a in range(len(dt_all)):
         stats[a,2] = dt_all[a]
         stats[a,0] = statistics.mean(sd_all[a])
-        stats[a,1] = statistics.stdev(sd_all[a])
+        if len(sd_all[a]) >= 2:
+            stats[a,1] = statistics.stdev(sd_all[a])
 
     return stats, sd_all, dt_all
 

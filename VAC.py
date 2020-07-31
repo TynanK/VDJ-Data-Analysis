@@ -94,7 +94,8 @@ def VAC(data1, data2):
     for a in range(len(dts)):
         stats[a,2] = dts[a]
         stats[a,0] = statistics.mean(correlations[a])
-        stats[a,1] = statistics.stdev(correlations[a])
+        if len(correlations[a]) >= 2:
+            stats[a,1] = statistics.stdev(correlations[a])
     
     return stats, correlations, dts
 
