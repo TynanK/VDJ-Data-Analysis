@@ -83,7 +83,8 @@ def VAC(data1, data2):
                 dts.append(dt)
                 correlations.append([corr])
     
-    dts_sorted = dts.sort()
+    dts_sorted = dts
+    dts_sorted.sort()
     if dts_sorted != dts:
         correlations = [x for _,x in sorted(zip(dts, correlations))]
         dts = dts_sorted
@@ -93,7 +94,7 @@ def VAC(data1, data2):
     for a in range(len(dts)):
         stats[a,2] = dts[a]
         stats[a,0] = statistics.mean(correlations[a])
-        stats[a,1] = statsitics.stdev(correlations[a])
+        stats[a,1] = statistics.stdev(correlations[a])
     
     return stats, correlations, dts
 

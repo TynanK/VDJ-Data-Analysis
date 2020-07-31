@@ -32,7 +32,8 @@ def MSD(data):
             else:
                 dt_all.append(dt)
                 sd_all.append([sd])
-    dt_all_sorted = dt_all.sort()
+    dt_all_sorted = dt_all
+    dt_all_sorted.sort()
     if dt_all_sorted != dt_all:
         sd_all = [x for _,x in sorted(zip(dt_all,sd_all))]
         dt_all = dt_all_sorted
