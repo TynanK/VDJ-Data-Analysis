@@ -44,18 +44,25 @@ def singleTrajectoryAnalysis(dataFile1, dataFile2):
     return stats, correlations, dts
 
 def VAC(data1, data2):
-    assert (data1.shape == data2.shape), "Error: mismatched data shapes"
-    (i,j) = data1.shape
-    assert (data1[:,3] == data2[:,3]), "Error: mismatched time steps"
-    seps = np.zeros((i, j))
-    seps[:,0:3] = data2[:,0:3] - data1[:,0:3]
-    seps[:,3] = data1[:,3]
-    for a in range(i):
-        if data1[a,4] == 1 or data2[a,4] == 1:
-            seps[a,4] == 1
+    (_,j) = data1.shape
+    times1 = list(data1[:,3])
+    times2 = list(data2[:,3])
+    sharedTimes = list(set(times1) & set(times2))
+    lenT = len(sharedTimes)
+
+    seps = np.zeros((lenT, j))
+
+    for a in range(lenT):
+        data1index = times1.index(sharedTimes[a])
+        data2index = times2.index(sharedTimes[a])
+        seps[a,0:3] = data2[data2index,0:3] - data1[data2index,0:3]
+        seps[a,3] = sharedTimes[a]
+        if data1[data1index,4] == 1 or data2[data2index,4] == 1:
+            seps[a,4] = 1
     
-    vels = np.zeros((i-1, j))
-    for a in range(i-1):
+    
+    vels = np.zeros((lenT-1, j))
+    for a in range(lenT-1):
         vels[a,0:3] = (seps[a+1,0:3] - seps[a,0:3]) / (seps[a+1,3] - seps[a,3])
         vels[a,3] = (seps[a+1,3] + seps[a,3]) / 2
         if seps[a+1,4] == 1 or seps[a,4] == 1:
@@ -65,15 +72,15 @@ def VAC(data1, data2):
     unitVels[:,3:5] = vels[:,3:5]
     mags = np.linalg.norm(vels[:,0:3], axis=1)
 
-    for a in range(i-1):
+    for a in range(lenT-1):
         if mags[a] != 0:
             unitVels[a,0:3] = vels[a,0:3] / mags[a]
     
     correlations = []
     dts = []
 
-    for a in range(i-2):
-        for b in range(a,i-1):
+    for a in range(lenT-2):
+        for b in range(a,lenT-1):
             dt = abs(unitVels[b,3] - unitVels[a,3])
             corr = np.dot(unitVels[b,0:3], unitVels[a,0:3])
             if dt in dts:
