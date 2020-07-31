@@ -37,16 +37,6 @@ def plotPDF(pdf, binCenters, fig, ax, colors, dataName, intLabel):
 
     return fig, ax
 
-def genRGB(colorFlag, count):
-    RGB = []
-    magRange = np.linspace(0.0, 0.8, num=count)
-    for a in range(count):
-        color = (magRange[a], magRange[a], magRange[a])
-        color[colorFlag] = 1.0
-        RGB.append(color)
-    return RGB
-
-
 if __name__ == "__main__":
     argc = len(sys.argv)
     colorFlag = -1
@@ -79,7 +69,7 @@ if __name__ == "__main__":
     
     fig, ax = plt.subplots(figsize=figure_size)
 
-    currentDir = os.path.getcwd()
+    currentDir = os.getcwd()
     for index in range(len(filenames)):
         file1 = filenames[index]
         pdfFile = currentDir + "/PDF_" + file1
@@ -96,5 +86,5 @@ if __name__ == "__main__":
     fig.tight_layout()
     
     fig.savefig("PDF.pdf")
-    pickle.dump(ax, file('PDF.pickle', 'w')) # Can reload this using pickle.load('PDF.pickle'), then plt.show()
+    # pickle.dump(ax, file('PDF.pickle', 'w')) # Can reload this using pickle.load('PDF.pickle'), then plt.show()
     plt.close(fig)

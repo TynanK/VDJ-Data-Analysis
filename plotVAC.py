@@ -19,12 +19,12 @@ figure_size = (10,10)
 
 def plotVAC(stats, fig, ax, statsName, intLabel):
 
-    ax.plot(stats[:,2], stats[:,0], label=statsName, color=colors[intLabel], marker='x', linestyle='none')
+    ax.plot(stats[:,2], stats[:,0], label=statsName, color=colors[intLabel], marker='.', linestyle='none')
     ax.set_xlabel("Time [s]")
     ax.set_ylabel("VAC")
     ax.set_title("Velocity Autocorrelation vs Time")
-    ax.xlim(0, max(stats[:,0]))
-    ax.ylim(-1.0, 1.0)
+    ax.set_xlim(0, max(stats[:,2]))
+    ax.set_ylim(-1.0, 1.0)
     fig.tight_layout()
 
     return fig, ax
@@ -41,12 +41,12 @@ if __name__ == "__main__":
     for index in range(len(filenames)):
         stats = np.load(filenames[index])
         statsName = fiMa.stripExtension(filenames[index])
-        fig, ax = plotMSD(stats, fig, ax, statsName, index)
+        fig, ax = plotVAC(stats, fig, ax, statsName, index)
     
-    xmin, xmax = ax.xlim()
-    ax.hlines(-0.5, xmin, xmax, linestyles='dashed', label='VAC = -0.5', color='k', marker='none')
+    xmin, xmax = ax.get_xlim()
+    ax.hlines(-0.5, xmin, xmax, linestyles='dashed', label='VAC = -0.5', color='k')
     ax.legend()
     fig.tight_layout()
     fig.savefig("VAC.pdf")
-    pickle.dump(ax, file('VAC.pickle', 'w')) # Can reload this using pickle.load('VAC.pickle'), then plt.show()
+    # pickle.dump(ax, file('VAC.pickle', 'w')) # Can reload this using pickle.load('VAC.pickle'), then plt.show()
     plt.close(fig)
