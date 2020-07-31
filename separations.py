@@ -16,8 +16,8 @@ def extractSeparations(R1_filename, G1_filename, G2_filename):
     DJDJ = separations(G1, G2)
     VDJ = separations(G1, R1)
 
-    DJDJ_filename = fiMa.swapPrefix(R1_filename, "DJDJ")
-    VDJ_filename = fiMa.swapPrefix(R1_filename, "VDJ")
+    DJDJ_filename = fiMa.swapPrefix(R1_filename, "DJDJ_")
+    VDJ_filename = fiMa.swapPrefix(R1_filename, "VDJ_")
 
     np.save(DJDJ_filename, DJDJ)
     np.save(VDJ_filename, VDJ)
