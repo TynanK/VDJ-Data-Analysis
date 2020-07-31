@@ -140,3 +140,5 @@ if __name__ == "__main__":
     
     diffStats = diffusionAnalysis(stats[mindex:maxdex,:])
     np.save(prefix + "_" + filename, diffStats)
+
+    print(diffStats)

@@ -22,11 +22,11 @@ import sys, statistics, math, pickle
 import filenameManipulations as fiMa
 import plotManipulations as plMa
 
-figure_size = (10,10)
+figure_size = (10,7)
 
 def plotMSD(stats, fig, ax, colors, statsName, intLabel):
 
-    ax.loglog(stats[:,2], stats[:,0], label=statsName, color=colors[intLabel], marker='x', linestyle='none')
+    ax.loglog(stats[:,2], stats[:,0], label=statsName, color=colors[intLabel], marker='.', linestyle='None')
     ax.set_xlabel("Time [s]")
     ax.set_ylabel(u"MSD [\u03BCm^2]")
     ax.set_title("Mean-Squared Displacement vs Time")
@@ -75,5 +75,5 @@ if __name__ == "__main__":
     fig.tight_layout()
     
     fig.savefig("MSD.pdf")
-    pickle.dump(ax, file('MSD.pickle', 'w')) # Can reload this using pickle.load('MSD.pickle'), then plt.show()
+    # pickle.dump(ax, file('MSD.pickle', 'w')) # Can reload this using pickle.load('MSD.pickle'), then plt.show()
     plt.close(fig)
