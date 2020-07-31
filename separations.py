@@ -25,9 +25,6 @@ def extractSeparations(R1_filename, G1_filename, G2_filename):
     return DJDJ, VDJ
 
 def separations(data1, data2):
-    (i1,j1) = data1.shape
-    (i2,j2) = data2.shape
-
     times1 = list(data1[:,3])
     times2 = list(data2[:,3])
 
