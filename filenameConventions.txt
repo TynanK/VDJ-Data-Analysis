@@ -27,6 +27,12 @@ separations.py:
     inputs:         R1_*.npy G1_*.npy G2_*.npy
     outputs:        DJDJ_*.npy VDJ_*.npy
 
+separationsSet.py:
+    dependencies:   importData.py
+    inputs:         numCells
+        numCells is used to import the output of importDataSet.py
+    outputs:        DJDJ_[1-numCells].npy VDJ_[1-numCells].npy
+
 MSD.py:
     dependencies:   separations.py
     inputs:         [DJDJ/VDJ]_*.npy
