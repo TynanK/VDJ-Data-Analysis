@@ -15,7 +15,7 @@ import arrayManipulations as arMa
 def singleTrajectoryAnalysis(dataFile1, dataFile2):
     data1 = np.load(dataFile1)
     data2 = np.load(dataFile2)
-    stats, correlations, dts = VAC(data1, data2)
+    stats, correlations, dts, deltas = VAC(data1, data2)
 
     prefix1 = fiMa.extractPrefix(dataFile1)
     prefix2 = fiMa.extractPrefix(dataFile2)
@@ -30,26 +30,35 @@ def singleTrajectoryAnalysis(dataFile1, dataFile2):
     else:
         assert (1==0), "Improper input file prefixes. Need a pair of either R1/G1 or G1/G2"
 
+    stats_np = arMa.makeArray3D(stats)
     outStatsName = "stats_VAC_" + dataType + "_" + fiMa.stripPrefix(dataFile2)
-    np.save(outStatsName, stats)
+    np.save(outStatsName, stats_np)
 
     outDtsName = "dts_VAC_" + dataType + "_" + fiMa.stripPrefix(dataFile2)
-    dts_np = np.array(dts)
+    dts_np = arMa.makeArray(dts)
     np.save(outDtsName, dts_np)
 
     outCorrelationsName = "corr_VAC_" + dataType + "_" + fiMa.stripPrefix(dataFile2)
-    corr_np = arMa.makeArray(correlations)
+    corr_np = arMa.makeArray3D(correlations)
     np.save(outCorrelationsName, corr_np)
 
-    return stats, corr_np, dts_np
+    outDeltasName = "deltas_VAC_" + dataType + "_" + fiMa.stripPrefix(dataFile2)
+    deltas_np = np.array(deltas)
+    np.save(outDeltasName, deltas_np)
+
+    return stats, corr_np, dts_np, deltas_np
 
 def VAC(data1, data2):
     (_,j) = data1.shape
+
+    # The times for different data sets aren't necessarily going to match up, so I first need to find the timesteps shared by both data1 and data2
     times1 = list(data1[:,3])
     times2 = list(data2[:,3])
     sharedTimes = list(set(times1) & set(times2))
     lenT = len(sharedTimes)
 
+
+    # Now, we calculate separation vectors only for timesteps where we have both positions
     seps = np.zeros((lenT, j))
 
     for a in range(lenT):
@@ -60,51 +69,76 @@ def VAC(data1, data2):
         if data1[data1index,4] == 1 or data2[data2index,4] == 1:
             seps[a,4] = 1
     
-    
-    vels = np.zeros((lenT-1, j))
-    for a in range(lenT-1):
-        vels[a,0:3] = (seps[a+1,0:3] - seps[a,0:3]) / (seps[a+1,3] - seps[a,3])
-        vels[a,3] = (seps[a+1,3] + seps[a,3]) / 2
-        if seps[a+1,4] == 1 or seps[a,4] == 1:
-            vels[a,4] = 1
-    
-    unitVels = np.zeros(vels.shape)
-    unitVels[:,3:5] = vels[:,3:5]
-    mags = np.linalg.norm(vels[:,0:3], axis=1)
+    # Next, we calculate unit velocities for every pair of separation vectors. This allows us to study the variation of the VAC with both the time between velocities, t, and the time over which they are averaged, delta.
+
+    unitVels = [] # This will be a list of lists, where each item is of the form [vx vy vz delta t flag], and the velocity is normalized
+    # Need to iterate over every pair of separations to fill unitVels[]
 
     for a in range(lenT-1):
-        if mags[a] != 0:
-            unitVels[a,0:3] = vels[a,0:3] / mags[a]
+        for b in range(a,lenT-1):
+            thisDelta = seps[b,3] - seps[a,3]
+            thisT = (seps[b,3] + seps[a,3]) / 2
+            thisVel = (seps[b,0:3] - seps[a,0:3]) / thisDelta
+            if seps[a,4] == 1 or seps[b,4] == 1:
+                thisFlag = 1
+            else:
+                thisFlag = 0
+            thisUnitVel = thisVel / np.linalg.norm(thisVel)
+            unitVels.append([thisUnitVel[0], thisUnitVel[1], thisUnitVel[2], thisDelta, thisT, thisFlag])
+
+    # Now, to make calculating the correlations faster, it's best to organize the velocities based on delta.
+
+    delta_list = []
+    unitVels_organized = []
+    len0 = len(unitVels)
+    for a in range(len0):
+        unitVels_organized, delta_list = arMa.dataInsert(unitVels_organized, delta_list, unitVels[a], unitVels[a][3])
     
+    # Let's sort this before continuing
+    unitVels_organized, delta_list = arMa.sort2D(unitVels_organized, delta_list)
+
+    # Time to calculate correlations. Correlations will be a ListofListsofLists indexed by delta, dt, and dataType, and dts will be a ListofLists indexed by delta and dataType
+    # Oh, and because of the way arMa.dataInsert3D() works, I'll be rebuilding the delta list.
     correlations = []
     dts = []
+    deltas = []
 
-    for a in range(lenT-2):
-        for b in range(a,lenT-1):
-            dt = abs(unitVels[b,3] - unitVels[a,3])
-            corr = np.dot(unitVels[b,0:3], unitVels[a,0:3])
-            if dt in dts:
-                dt_ind = dts.index(dt)
-                correlations[dt_ind].append(corr)
+    len0 = len(delta_list)
+
+    for a in range(len0):
+        len1 = len(unitVels_organized[a])
+        thisDelta = delta_list[a]
+        for b in range(len1):
+            for c in range(b,len1):
+                thisCorr = np.dot(unitVels_organized[a][b][0:3], unitVels_organized[a][c][0:3])
+                thisDt = abs(unitVels_organized[a][c][4] - unitVels_organized[a][b][4])
+                correlations, deltas, dts = arMa.dataInsert3D(correlations, deltas, dts, thisCorr, thisDelta, thisDt)
+
+    # Let's sort all this before continuing
+
+    correlations, deltas, dts = arMa.sort3D(correlations, deltas, dts)
+    
+    # Now to calculate the statistics. Need the meanVAC, stdDev, delta, and dt. Indexed by delta and dt.
+    # This will be a list of lists of lists, since [meanVAC, stdDev, delta, dt] will be the lowest-level list, and each of these lowest-level lists will be indexed by delta and dt.
+    
+    stats = []
+
+    len0 = len(correlations)
+
+    for a in range(len0): # a indexes delta
+        stats.append([])
+        len1 = len(correlations[a])
+        thisDelta = deltas[a]
+        for b in range(len1): # b indexes dt
+            thisMeanVAC = statistics.mean(correlations[a][b])
+            if len(correlations[a][b]) >= 2:
+                thisStdDev = statistics.stdev(correlations[a][b])
             else:
-                dts.append(dt)
-                correlations.append([corr])
-    
-    dts_sorted = dts
-    dts_sorted.sort()
-    if dts_sorted != dts:
-        correlations = [x for _,x in sorted(zip(dts, correlations))]
-        dts = dts_sorted
-    
-    stats = np.zeros((len(dts), 3)) # meanVAC, stdDev, dt
-
-    for a in range(len(dts)):
-        stats[a,2] = dts[a]
-        stats[a,0] = statistics.mean(correlations[a])
-        if len(correlations[a]) >= 2:
-            stats[a,1] = statistics.stdev(correlations[a])
-    
-    return stats, correlations, dts
+                thisStdDev = 0.0
+            thisDt = dts[a][b]
+            stats[a].append([thisMeanVAC, thisStdDev, thisDelta, thisDt])
+        
+    return stats, correlations, dts, deltas
 
 if __name__ == "__main__":
     argc = len(sys.argv)
