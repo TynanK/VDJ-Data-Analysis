@@ -8,6 +8,7 @@
 import numpy as np
 import sys, statistics, math
 
+localizationError = 0.02 # Units of um^2
 
 def diffusionAnalysis(stats):
 
@@ -20,7 +21,8 @@ def diffusionAnalysis(stats):
     weights = np.zeros(i)
     for a in range(i):
         if stats[a,1] != 0:
-            weights[a] = math.pow(logStats[a,1], -2)
+
+            weights[a] = 1 / ( math.pow(logStats[a,1], 2) + localizationError)
         else:
             weights[a] = 0
 
