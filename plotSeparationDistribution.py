@@ -27,9 +27,9 @@ figure_size = (10,7)
 def plotSeparationDistribution(pdf, binCenters, fig, ax, colors, pdfName, intLabel):
     dataType = fiMa.extractPrefix(pdfName)
     ax.plot(binCenters, pdf, label=pdfName, color=colors[intLabel], marker='None', linestyle='-')
-    ax.set_xlabel("Time [s]")
-    ax.set_ylabel(u"Separation [\u03BCm]")
-    ax.set_title(dataType + " Separation vs Time")
+    ax.set_ylabel("PDF")
+    ax.set_xlabel(u"Separation [\u03BCm]")
+    ax.set_title("Probability Density Function of " + dataType + " Separations")
     fig.tight_layout()
 
     return fig, ax
@@ -68,13 +68,12 @@ if __name__ == "__main__":
 
     for index in range(len(filenames)):
         pdf = np.load(filenames[index])
-        binCenters = np.load(fiMa.swapPrefix(filenames[index], binCenters))
+        binCenters = np.load(fiMa.swapPrefix(filenames[index], "binCenters_"))
         pdfName = fiMa.stripPrefix(fiMa.stripExtension(filenames[index]))
         fig, ax = plotSeparationDistribution(pdf, binCenters, fig, ax, colors, pdfName, index)
     
     ax.legend()
     fig.tight_layout()
     
-    fig.savefig("Trajectory.pdf")
-    # pickle.dump(ax, file('Trajectory.pickle', 'w')) # Can reload this using pickle.load('Trajectory.pickle'), then plt.show()
+    fig.savefig("PDF_trajectory.pdf")
     plt.close(fig)

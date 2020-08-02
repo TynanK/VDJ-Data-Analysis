@@ -8,7 +8,7 @@
 
 # Type 1: python3 separationDistribution.py batch [dataType] [numCells] [binCount]
 # This will perform the analysis of trajectory files of the form [dataType]_[1-numCells].npy. ex: VDJ_1.npy, VDJ_2.npy, ...., VDJ_[numCells].npy
-# binCount is just the number of bins to use for the PDF
+# binCount is just the number of points to use in the X grid of the gaussian kernel. Increasing it won't screw things up like it would for a histogram.
 
 # Type 2: python3 separationDistribution.py [binCount] [filename(s)]
 # This will perform the analysis on the specific files listed. binCount means the same as before
@@ -18,6 +18,7 @@
 import numpy as np
 import sys, os, statistics
 import filenameManipulations as fiMa
+import scipy.stats
 
 def singleTrajectoryAnalysis(filename, binCount):
     data = np.load(filename)
@@ -37,15 +38,14 @@ def separationDistribution(data, binCount):
     maxSep = 1.01 * max(separations)
     binEdges = np.linspace(minSep, maxSep, num=binCount+1)
     binCenters = (binEdges[1:] + binEdges[0:binCount]) / 2.0
-    bins = np.zeros(binCount)
 
-    len0 = separations.size
-    for a in range(len0):
-        bins = addToBins(bins, binEdges, separations[a])
+    kernel = scipy.stats.gaussian_kde(separations,bw_method=0.2)
 
-    PDF = normalize(bins, binEdges)
+    PDF = kernel.evaluate(binCenters)
 
     return PDF, binCenters
+
+# Below are some deprecated functions from my initial histogram implementation. Then I remembered kernels exist.
 
 def addToBins(bins, binEdges, datum):
     binCount = bins.size
