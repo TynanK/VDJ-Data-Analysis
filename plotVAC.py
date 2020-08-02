@@ -7,13 +7,14 @@
 # minDelta: The minimum value of Delta to use. If this is less than the lowest value of Delta in the data set, that value supercedes minDelta.
 # maxDelta: The maximum value of Delta to use. If this is more than the largest value of Delta in the data set, that value supercedes maxDelta.
 # maxDt:    The maximum value of Dt (the x-axis) to plot to. Data will be truncated beyond this value. No need to specify minDt, since it will always be zero.
-# [filenames]: These should be files output by VAC.py or ensembleVAC.py. Specifically, stats_VAC_*.npy. The script will fetch any relevant dts_VAC_*.npy and deltas_VAC_*.npy files.
+# [filenames]: These should be files output by VAC.py or ensembleVAC.py. Specifically, stats_*.npy. The script will fetch any relevant dts_*.npy and deltas_*.npy files.
 
 # Note: this will output TWO plots. One of VAC vs dt, and one of VAC vs dt/delta
 
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
+matplotlib.rc('font', family='monospace')
 import matplotlib.pyplot as plt
 import sys, statistics, math, pickle
 import filenameManipulations as fiMa
@@ -54,8 +55,8 @@ def truncateBelowIndex(list1, minVal): # Returns the index, not the new list!!! 
         return 0
     else:
         for a in range(len(list1)):
-            if minVal > list1[a]:
-                return a+1
+            if minVal < list1[a]:
+                return a-1
 
 if __name__ == "__main__":
     argc = len(sys.argv)
@@ -72,6 +73,11 @@ if __name__ == "__main__":
     
     fig1, ax1 = plt.subplots(figsize=figure_size)
     fig2, ax2 = plt.subplots(figsize=figure_size)
+    maxStatsNameWidth = 0
+    for fileIndex in range(len(filenames)):
+        statsName = fiMa.stripPrefix(fiMa.stripExtension(filenames[fileIndex]))
+        if len(statsName) > maxStatsNameWidth:
+            maxStatsNameWidth = len(statsName)
 
     for fileIndex in range(len(filenames)):
         stats_np = np.load(filenames[fileIndex])
@@ -112,7 +118,7 @@ if __name__ == "__main__":
             theseVACs = []
             for dtIndex in range(thisNumDts):
                 theseVACs.append( these_Stats[dtIndex][0] )
-            thisName = statsName + "_delta_{0:4.1f}s".format(thisDelta)
+            thisName = u"{0:{width}s}, \u03B4 = {1:4.1f}s".format(statsName, thisDelta, width=maxStatsNameWidth)
             fig1, ax1 = plotVAC(fig1, ax1, theseDts_truncated, theseVACs, thisName, colorIndex, colors)
             fig2, ax2 = plotVAC(fig2, ax2, theseRescaledDts, theseVACs, thisName, colorIndex, colors)
             colorIndex += 1
@@ -123,7 +129,7 @@ if __name__ == "__main__":
     ax1.set_xlim(0.0, maxDt)
     ax2.set_xlim(0.0, maxDt / minDelta)
     ax1.set_xlabel("Time [s]")
-    ax2.set_xlabel(u"Rescaled Time (t / \u03B4")
+    ax2.set_xlabel(u"Rescaled Time (t / \u03B4)")
     ax1.hlines(-0.5, 0.0, maxDt, linestyles='dashed', label='VAC = -0.5', color='k')
     ax2.hlines(-0.5, 0.0, maxDt / minDelta, linestyles='dashed', label='VAC = -0.5', color='k')
     ax1.legend(loc='best')

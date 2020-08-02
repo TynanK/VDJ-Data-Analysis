@@ -72,7 +72,7 @@ def VAC(data1, data2):
 
     for a in range(lenT-2):
         for b in range(a+1,lenT-1):
-            thisDelta = seps[b,3] - seps[a,3]
+            thisDelta = abs(seps[b,3] - seps[a,3])
             thisT = (seps[b,3] + seps[a,3]) / 2
             thisVel = (seps[b,0:3] - seps[a,0:3]) / thisDelta
             if seps[a,4] == 1 or seps[b,4] == 1:
