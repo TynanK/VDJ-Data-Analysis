@@ -15,7 +15,7 @@ import arrayManipulations as arMa
 def singleTrajectoryAnalysis(dataFile1, dataFile2):
     data1 = np.load(dataFile1)
     data2 = np.load(dataFile2)
-    stats, correlations, dts, deltas = VAC(data1, data2)
+    stats_np, corr_np, dts_np, deltas_np = VAC(data1, data2)
 
     prefix1 = fiMa.extractPrefix(dataFile1)
     prefix2 = fiMa.extractPrefix(dataFile2)
@@ -30,20 +30,16 @@ def singleTrajectoryAnalysis(dataFile1, dataFile2):
     else:
         assert (1==0), "Improper input file prefixes. Need a pair of either R1/G1 or G1/G2"
 
-    stats_np = arMa.makeArray3D(stats)
     outStatsName = "stats_VAC_" + dataType + "_" + fiMa.stripPrefix(dataFile2)
     np.save(outStatsName, stats_np)
 
     outDtsName = "dts_VAC_" + dataType + "_" + fiMa.stripPrefix(dataFile2)
-    dts_np = arMa.makeArray(dts)
     np.save(outDtsName, dts_np)
 
     outCorrelationsName = "corr_VAC_" + dataType + "_" + fiMa.stripPrefix(dataFile2)
-    corr_np = arMa.makeArray3D(correlations)
     np.save(outCorrelationsName, corr_np)
 
     outDeltasName = "deltas_VAC_" + dataType + "_" + fiMa.stripPrefix(dataFile2)
-    deltas_np = np.array(deltas)
     np.save(outDeltasName, deltas_np)
 
     return stats, corr_np, dts_np, deltas_np
@@ -74,8 +70,8 @@ def VAC(data1, data2):
     unitVels = [] # This will be a list of lists, where each item is of the form [vx vy vz delta t flag], and the velocity is normalized
     # Need to iterate over every pair of separations to fill unitVels[]
 
-    for a in range(lenT-1):
-        for b in range(a,lenT-1):
+    for a in range(lenT-2):
+        for b in range(a+1,lenT-1):
             thisDelta = seps[b,3] - seps[a,3]
             thisT = (seps[b,3] + seps[a,3]) / 2
             thisVel = (seps[b,0:3] - seps[a,0:3]) / thisDelta
@@ -121,6 +117,19 @@ def VAC(data1, data2):
     # Now to calculate the statistics. Need the meanVAC, stdDev, delta, and dt. Indexed by delta and dt.
     # This will be a list of lists of lists, since [meanVAC, stdDev, delta, dt] will be the lowest-level list, and each of these lowest-level lists will be indexed by delta and dt.
     
+    stats = statsVAC(correlations, deltas, dts)
+
+    # This function is expected to return numpy arrays, so let's convert everything now
+
+    stats_np = arMa.makeArray3D(stats)
+    corr_np = arMa.makeArray3D(correlations)
+    dts_np = arMa.makeArray(dts)
+    deltas_np = np.array(deltas)
+
+        
+    return stats_np, corr_np, dts_np, deltas_np
+
+def statsVAC(correlations, deltas, dts):
     stats = []
 
     len0 = len(correlations)
@@ -137,8 +146,8 @@ def VAC(data1, data2):
                 thisStdDev = 0.0
             thisDt = dts[a][b]
             stats[a].append([thisMeanVAC, thisStdDev, thisDelta, thisDt])
-        
-    return stats, correlations, dts, deltas
+    
+    return stats
 
 if __name__ == "__main__":
     argc = len(sys.argv)

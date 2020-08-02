@@ -12,24 +12,26 @@ import filenameManipulations as fiMa
 import VAC
 
 def ensembleAnalysis(filenames, dataType):
-    stats, corr_ensemble, dt_ensemble = ensembleVAC(filenames, dataType)
-    np.save("stats_VAC_" + dataType + "_ensemble.npy", stats)
-    dt_np = np.array(dt_ensemble)
+    stats_np, corr_np, dt_np, delta_np = ensembleVAC(filenames, dataType)
+    np.save("stats_VAC_" + dataType + "_ensemble.npy", stats_np)
     np.save("dt_VAC_" + dataType + "_ensemble.npy", dt_np)
-    corr_np = arMa.makeArray(corr_ensemble)
     np.save("corr_VAC_" + dataType + "_ensemble.npy", corr_np)
+    np.save("delta_VAC_" + dataType + "_ensemble.npy", delta_np)
     return stats, corr_ensemble, dt_ensemble
 
 def ensembleVAC(filenames, dataType):
     currentDir = os.getcwd()
     corr_ensemble = []
     dt_ensemble = []
+    delta_ensemble = []
     for file3 in filenames:
         dt_filename = currentDir + "/dt_" + file3
         corr_filename = currentDir + "/corr_" + file3
-        if os.path.isfile(dt_filename) and os.path.isfile(corr_filename):
+        deltas_filename = currentDir + "/deltas_" + file3
+        if os.path.isfile(dt_filename) and os.path.isfile(corr_filename) and os.path.isfile(deltas_filename):
             dt_data = np.load(dt_filename)
             corr_data = np.load(corr_filename)
+            delta_data = np.load(deltas_filename)
         else:
             if dataType == 'VDJ':
                 file1 = fiMa.swapPrefix(fiMa.stripPrefix(file3), "R1_")
@@ -40,24 +42,23 @@ def ensembleVAC(filenames, dataType):
             else:
                 assert (1==0), "Improper dataType"
             
-            stats, corr_data, dt_data = VAC.singleTrajectoryAnalysis(file1, file2)
+            stats, corr_data, dt_data, delta_data = VAC.singleTrajectoryAnalysis(file1, file2)
     
-        (i,_) = corr_data.shape
-        k = dt_data.size
-        assert (i==k), "corr and dt data mismatch in: " + file3
+        corr_list = arMa.makeListofListsofLists(corr_data)
+        dt_list = arMa.makeListOfLists(dt_data)
+        delta_list = list(delta_data)
 
-        corr_list = arMa.makeListOfLists(corr_data)
-        dt_list = list(dt_data)
+        corr_ensemble, delta_ensemble, dt_ensemble = arMa.mergeLists3D(corr_ensemble, delta_ensemble, dt_ensemble, corr_list, delta_list, dt_list)
 
-        corr_ensemble, dt_ensemble = arMa.mergeLists(corr_ensemble, dt_ensemble, corr_list, dt_list)
+    stats = VAC.statsVAC(corr_ensemble, delta_ensemble, dt_ensemble)
 
-    stats = np.zeros((len(dt_ensemble), 3))
-    for a in range(len(dt_ensemble)):
-        stats[a,2] = dt_ensemble[a]
-        stats[a,0] = statistics.mean(corr_ensemble[a])
-        stats[a,1] = statistics.stdev(corr_ensemble[a])
+    # This function is expected to return numpy arrays, so let's convert everything now
+    stats_np = arMa.makeArray3D(stats)
+    corr_np = arMa.makeArray3D(corr_ensemble)
+    dt_np = arMa.makeArray(dt_ensemble)
+    delta_np = np.array(delta_ensemble)
 
-    return stats, corr_ensemble, dt_ensemble
+    return stats_np, corr_np, dt_np, delta_np
 
 if __name__ == "__main__":
     argc = len(sys.argv)
