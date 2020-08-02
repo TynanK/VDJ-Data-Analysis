@@ -22,9 +22,9 @@ import plotManipulations as plMa
 
 figure_size = (10,10)
 
-def plotVAC(fig, ax, x_vals, y_vals, statsName, intLabel, colors):
+def plotVAC(fig, ax, x_vals, y_vals, statsName, colorIndex, colors):
 
-    ax.plot(x_vals, y_vals, label=statsName, color=colors[intLabel], marker='.', linestyle='none')
+    ax.plot(x_vals, y_vals, label=statsName, color=colors[colorIndex], marker='None', linestyle='-')
     ax.set_xlabel("Time [s]")
     ax.set_ylabel("VAC")
     ax.set_title("Velocity Autocorrelation vs Time")
@@ -41,7 +41,7 @@ def truncateAboveIndex(list1, maxVal): # Returns the index, not the new list!!! 
     if maxVal >= maxList:
         return len(list1)
     else:
-        for a in len(list1):
+        for a in range(len(list1)):
             if maxVal < list1[a]:
                 return a
 
@@ -53,7 +53,7 @@ def truncateBelowIndex(list1, minVal): # Returns the index, not the new list!!! 
     if minVal <= minList:
         return 0
     else:
-        for a in len(list1):
+        for a in range(len(list1)):
             if minVal > list1[a]:
                 return a+1
 
@@ -98,7 +98,8 @@ if __name__ == "__main__":
         
         colors = plMa.genRGB(fileIndex, thisNumDelta)
 
-        delta_Indices = list( np.linspace(0,lenDeltas, num=thisNumDelta, dtype=int))
+        delta_Indices = list( np.linspace(0,lenDeltas-1, num=thisNumDelta, dtype=int))
+        colorIndex = 0
         for deltaIndex in delta_Indices:
             thisDelta = deltas_truncated[deltaIndex]
             theseDts = dts_truncated[deltaIndex]
@@ -106,20 +107,23 @@ if __name__ == "__main__":
             maxDtIndex = truncateAboveIndex(theseDts, maxDt)
             theseDts_truncated = theseDts[0:maxDtIndex]
             theseRescaledDts = theseDts_truncated / thisDelta
-            thisNumDts = len(theseDts)
+            thisNumDts = len(theseDts_truncated)
             these_Stats = stats_truncated[deltaIndex][0:maxDtIndex]
             theseVACs = []
             for dtIndex in range(thisNumDts):
                 theseVACs.append( these_Stats[dtIndex][0] )
-            thisName = statsName + "_delta_{0:6.4f}s".format(thisDelta)
-            fig1, ax1 = plotVAC(fig1, ax1, theseDts_truncated, theseVACs, thisName, deltaIndex, colors)
-            fig2, ax2 = plotVAC(fig2, ax2, theseRescaledDts, theseVACs, thisName, deltaIndex, colors)
+            thisName = statsName + "_delta_{0:4.1f}s".format(thisDelta)
+            fig1, ax1 = plotVAC(fig1, ax1, theseDts_truncated, theseVACs, thisName, colorIndex, colors)
+            fig2, ax2 = plotVAC(fig2, ax2, theseRescaledDts, theseVACs, thisName, colorIndex, colors)
+            colorIndex += 1
             
 
     ax1.set_title("Velocity Autocorrelation vs Time")
     ax2.set_title("Velocity Autocorrelation vs Rescaled Time")
     ax1.set_xlim(0.0, maxDt)
     ax2.set_xlim(0.0, maxDt / minDelta)
+    ax1.set_xlabel("Time [s]")
+    ax2.set_xlabel(u"Rescaled Time (t / \u03B4")
     ax1.hlines(-0.5, 0.0, maxDt, linestyles='dashed', label='VAC = -0.5', color='k')
     ax2.hlines(-0.5, 0.0, maxDt / minDelta, linestyles='dashed', label='VAC = -0.5', color='k')
     ax1.legend(loc='best')
