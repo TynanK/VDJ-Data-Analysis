@@ -14,9 +14,9 @@ import VAC
 def ensembleAnalysis(filenames, dataType):
     stats_np, corr_np, dt_np, delta_np = ensembleVAC(filenames, dataType)
     np.save("stats_VAC_" + dataType + "_ensemble.npy", stats_np)
-    np.save("dt_VAC_" + dataType + "_ensemble.npy", dt_np)
+    np.save("dts_VAC_" + dataType + "_ensemble.npy", dt_np)
     np.save("corr_VAC_" + dataType + "_ensemble.npy", corr_np)
-    np.save("delta_VAC_" + dataType + "_ensemble.npy", delta_np)
+    np.save("deltas_VAC_" + dataType + "_ensemble.npy", delta_np)
     return stats, corr_ensemble, dt_ensemble
 
 def ensembleVAC(filenames, dataType):

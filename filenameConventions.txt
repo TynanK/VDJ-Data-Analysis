@@ -59,13 +59,13 @@ diffusionAnalysis.py:
 VAC.py:
     dependencies:   importData.py
     inputs:         [R1_*.npy G1_*.npy / G1_*.npy G2_*.npy]
-    outputs:        stats_VAC_[DJDJ/VDJ]_*.npy dts_VAC_[DJDJ/VDJ]_*.npy corr_VAC_[DJDJ/VDJ]_*.npy
+    outputs:        stats_VAC_[DJDJ/VDJ]_*.npy dts_VAC_[DJDJ/VDJ]_*.npy corr_VAC_[DJDJ/VDJ]_*.npy deltas_VAC_[DJDJ/VDJ]_*.npy
 
 ensembleVAC.py:
     dependencies:   importData.py {VAC.py}
     inputs:         [DJDJ/VDJ] [# cells]
         These command line inputs result in actually requiring as inputs, for each cell, either the inputs or outputs of VAC.py
-    outputs:        stats_VAC_[DJDJ/VDJ]_ensemble.npy dt_VAC_[DJDJ/VDJ]_ensemble.npy corr_VAC_[DJDJ/VDJ]_ensemble.npy
+    outputs:        stats_VAC_[DJDJ/VDJ]_ensemble.npy dt_VAC_[DJDJ/VDJ]_ensemble.npy corr_VAC_[DJDJ/VDJ]_ensemble.npy deltas_VAC_[DJDJ/VDJ]_ensemble.npy
     
 plotVAC.py:
     dependencies:   [VAC.py / ensembleVAC.py]
