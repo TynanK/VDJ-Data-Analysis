@@ -17,7 +17,7 @@ def ensembleAnalysis(filenames, dataType):
     np.save("dts_VAC_" + dataType + "_ensemble.npy", dt_np)
     np.save("corr_VAC_" + dataType + "_ensemble.npy", corr_np)
     np.save("deltas_VAC_" + dataType + "_ensemble.npy", delta_np)
-    return stats, corr_ensemble, dt_ensemble
+    return stats_np, corr_np, dt_np, delta_np
 
 def ensembleVAC(filenames, dataType):
     currentDir = os.getcwd()

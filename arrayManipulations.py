@@ -18,19 +18,19 @@ def makeArray(ListOfLists):
     return data
 
 def makeArray3D(ListofListsofLists):
-    len0 = len(ListOfLists)
+    len0 = len(ListofListsofLists)
     len1 = 0
     len2 = 0
     for a in range(len0):
-        if len(ListofLists[a]) > len1:
-            len1 = len(ListofLists[a])
-        for b in range(len(ListofLists[a])):
-            if len(ListsofListsofLists[a][b]) > len2:
-                len2 = len(ListsofListsofLists[a][b])
+        if len(ListofListsofLists[a]) > len1:
+            len1 = len(ListofListsofLists[a])
+        for b in range(len(ListofListsofLists[a])):
+            if len(ListofListsofLists[a][b]) > len2:
+                len2 = len(ListofListsofLists[a][b])
     data = np.zeros((len0,len1,len2)) - 10
     for a in range(len0):
         for b in range(len(ListofListsofLists[a])):
-            for c in range(len(ListsofListsofLists[a][b])):
+            for c in range(len(ListofListsofLists[a][b])):
                 data[a,b,c] = ListofListsofLists[a][b][c]
     return data
 
@@ -78,7 +78,7 @@ def dataInsert3D(data_list, alpha_key_list, beta_key_listoflists, datum, alpha_k
             alpha_ind = alpha_key_list.index(alpha_key)
             if beta_key in beta_key_listoflists[alpha_ind]:
                 beta_ind = beta_key_listoflists[alpha_ind].index(beta_key)
-                data_list[alph_ind][beta_ind].append(datum)
+                data_list[alpha_ind][beta_ind].append(datum)
             else:
                 beta_key_listoflists[alpha_ind].append(beta_key)
                 data_list[alpha_ind].append([datum])
@@ -113,7 +113,7 @@ def mergeLists3D(data1, alpha_key_list1, beta_key_listoflists1, data2, alpha_key
         len1 = len(beta_key_listoflists2[a])
         for b in range(len1):
             for c in range(len(data2[a][b])):
-                data3, alpha_key_list_3, beta_key_listoflists3 = dataInsert3D(data3, alpha_key_list3, beta_key_listoflists3, data2[a][b][c], alpha_key_list2[a], beta_key_listoflists2[a][b])
+                data3, alpha_key_list3, beta_key_listoflists3 = dataInsert3D(data3, alpha_key_list3, beta_key_listoflists3, data2[a][b][c], alpha_key_list2[a], beta_key_listoflists2[a][b])
 
     data3, alpha_key_list3, beta_key_listoflists3 = sort3D(data3, alpha_key_list3, beta_key_listoflists3)
     

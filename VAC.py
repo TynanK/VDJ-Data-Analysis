@@ -42,7 +42,7 @@ def singleTrajectoryAnalysis(dataFile1, dataFile2):
     outDeltasName = "deltas_VAC_" + dataType + "_" + fiMa.stripPrefix(dataFile2)
     np.save(outDeltasName, deltas_np)
 
-    return stats, corr_np, dts_np, deltas_np
+    return stats_np, corr_np, dts_np, deltas_np
 
 def VAC(data1, data2):
     (_,j) = data1.shape
@@ -79,7 +79,10 @@ def VAC(data1, data2):
                 thisFlag = 1
             else:
                 thisFlag = 0
-            thisUnitVel = thisVel / np.linalg.norm(thisVel)
+            if np.linalg.norm(thisVel) != 0:
+                thisUnitVel = thisVel / np.linalg.norm(thisVel)
+            else:
+                thisUnitVel = thisVel
             unitVels.append([thisUnitVel[0], thisUnitVel[1], thisUnitVel[2], thisDelta, thisT, thisFlag])
 
     # Now, to make calculating the correlations faster, it's best to organize the velocities based on delta.
