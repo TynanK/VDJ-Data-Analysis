@@ -75,5 +75,4 @@ if __name__ == "__main__":
     fig.tight_layout()
     
     fig.savefig("Trajectory.pdf")
-    # pickle.dump(ax, file('MSD.pickle', 'w')) # Can reload this using pickle.load('MSD.pickle'), then plt.show()
     plt.close(fig)

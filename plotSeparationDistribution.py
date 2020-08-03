@@ -69,7 +69,7 @@ if __name__ == "__main__":
     
     fig, ax = plt.subplots(figsize=figure_size)
 
-currentDir = os.getcwd()
+    currentDir = os.getcwd()
     for index in range(len(filenames)):
         file1 = filenames[index]
         pdfFile = currentDir + "/PDF_" + file1
