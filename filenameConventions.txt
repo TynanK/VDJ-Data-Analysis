@@ -12,6 +12,23 @@ I'll also note if a script depends on any others being run first.
 
 Raw data: R1_*.csv, G1_*.csv, G2_*.csv
 
+diffusionAnalysis.py:
+    dependencies:   ensembleMSD.py
+    inputs:         stats_*.npy [Output Prefix] [dt_min] [dt_max]
+    outputs:        [Output Prefix]_stats_*.npy
+
+ensembleMSD.py:
+    dependencies:   separations.py {MSD.py}
+    inputs:         [DJDJ/VDJ] [# cells]
+        These command line inputs result in actually requiring as inputs, for each cell, either the inputs or outputs of MSD.py
+    outputs:        stats_MSD_[DJDJ/VDJ]_ensemble.npy dt_MSD_[DJDJ/VDJ]_ensemble.npy sd_MSD_[DJDJ/VDJ]_ensemble.npy
+
+ensembleVAC.py:
+    dependencies:   importData.py {VAC.py}
+    inputs:         [DJDJ/VDJ] [# cells]
+        These command line inputs result in actually requiring as inputs, for each cell, either the inputs or outputs of VAC.py
+    outputs:        stats_VAC_[DJDJ/VDJ]_ensemble.npy dt_VAC_[DJDJ/VDJ]_ensemble.npy corr_VAC_[DJDJ/VDJ]_ensemble.npy deltas_VAC_[DJDJ/VDJ]_ensemble.npy
+
 importData.py:
     dependencies:   none
     inputs:         timestep *.csv
@@ -21,6 +38,42 @@ importDataSet.py:
     dependencies:   none
     inputs:         timestep numCells
     output:         R1_[1-numCells].npy G1_[1-numCells].npy G2_[1-numCells].npy
+
+MSD.py:
+    dependencies:   separations.py
+    inputs:         [DJDJ/VDJ]_*.npy
+    outputs:        stats_MSD_[DJDJ/VDJ]_*.npy dt_MSD_[DJDJ/VDJ]_*.npy sd_MSD_[DJDJ/VDJ]_*.npy
+
+plotMSD.py:
+    dependencies:   [MSD.py / ensembleMSD.py]
+    inputs:         {red/blue/green/all} [stats_MSD_*.npy] {stats_MSD_*.npy ...}
+        Can have as many stats_MSD_*.npy as you want, and the filename format doesn't actually matter.
+        {red/blue/green/all} are color options. If you use all, you have to follow it with three integers representing the number of each color.
+    outputs:        MSD.pdf
+
+plotSeparationDistribution.py
+    dependencies:   [separations.py / separationDistribution.py]
+    inputs:         [red/blue/green/all] {numWT numJQ1 numA485} [ [DJDJ/VDJ]_*.npy ] { [DJDJ/VDJ]_*.npy ...}
+        Only require {numWT numJQ1 numA485} if using [all]
+        Soft dependency on separationDistribution.py .  If you haven't run it, the plotting script will do so, with a default binCount of 500
+    outputs:        PDF_trajectory.pdf
+
+plotTrajectory.py
+    dependencies:   separations.py
+    inputs:         [red/blue/green/all] {numWT numJQ1 numA485} [ [DJDJ/VDJ]_*.npy ] { [DJDJ/VDJ]_*.npy ...}
+        Only require {numWT numJQ1 numA485} if using [all]. And why would you ever do that?
+    outputs:        Trajectory.pdf         
+
+plotVAC.py:
+    dependencies:   [VAC.py / ensembleVAC.py]
+    inputs:         [stats_VAC_*.npy] {stats_VAC_*.npy ...}
+        Can have as many stats_VAC_*.npy as you want, and the filename format doesn't actually matter.
+    outputs:        VAC.pdf
+
+separationDistribution.py
+    dependencies:   separations.py
+    inputs:         [DJDJ/VDJ]_*.npy [binCount]
+    outputs:        PDF_[DJDJ/VDJ]_*.npy binCenters_[DJDJ/VDJ]_*.npy
 
 separations.py:
     dependencies:   importData.py
@@ -33,54 +86,7 @@ separationsSet.py:
         numCells is used to import the output of importDataSet.py
     outputs:        DJDJ_[1-numCells].npy VDJ_[1-numCells].npy
 
-MSD.py:
-    dependencies:   separations.py
-    inputs:         [DJDJ/VDJ]_*.npy
-    outputs:        stats_MSD_[DJDJ/VDJ]_*.npy dt_MSD_[DJDJ/VDJ]_*.npy sd_MSD_[DJDJ/VDJ]_*.npy
-
-ensembleMSD.py:
-    dependencies:   separations.py {MSD.py}
-    inputs:         [DJDJ/VDJ] [# cells]
-        These command line inputs result in actually requiring as inputs, for each cell, either the inputs or outputs of MSD.py
-    outputs:        stats_MSD_[DJDJ/VDJ]_ensemble.npy dt_MSD_[DJDJ/VDJ]_ensemble.npy sd_MSD_[DJDJ/VDJ]_ensemble.npy
-
-plotMSD.py:
-    dependencies:   [MSD.py / ensembleMSD.py]
-    inputs:         {red/blue/green/all} [stats_MSD_*.npy] {stats_MSD_*.npy ...}
-        Can have as many stats_MSD_*.npy as you want, and the filename format doesn't actually matter.
-        {red/blue/green/all} are color options. If you use all, you have to follow it with three integers representing the number of each color.
-    outputs:        MSD.pdf MSD.pickle
-
-diffusionAnalysis.py:
-    dependencies:   ensembleMSD.py
-    inputs:         stats_*.npy [Output Prefix] [dt_min] [dt_max]
-    outputs:        [Output Prefix]_stats_*.npy
-
 VAC.py:
     dependencies:   importData.py
     inputs:         [R1_*.npy G1_*.npy / G1_*.npy G2_*.npy]
     outputs:        stats_VAC_[DJDJ/VDJ]_*.npy dts_VAC_[DJDJ/VDJ]_*.npy corr_VAC_[DJDJ/VDJ]_*.npy deltas_VAC_[DJDJ/VDJ]_*.npy
-
-ensembleVAC.py:
-    dependencies:   importData.py {VAC.py}
-    inputs:         [DJDJ/VDJ] [# cells]
-        These command line inputs result in actually requiring as inputs, for each cell, either the inputs or outputs of VAC.py
-    outputs:        stats_VAC_[DJDJ/VDJ]_ensemble.npy dt_VAC_[DJDJ/VDJ]_ensemble.npy corr_VAC_[DJDJ/VDJ]_ensemble.npy deltas_VAC_[DJDJ/VDJ]_ensemble.npy
-    
-plotVAC.py:
-    dependencies:   [VAC.py / ensembleVAC.py]
-    inputs:         [stats_VAC_*.npy] {stats_VAC_*.npy ...}
-        Can have as many stats_VAC_*.npy as you want, and the filename format doesn't actually matter.
-    outputs:        VAC.pdf VAC.pickle
-
-separationDistribution.py
-    dependencies:   separations.py
-    inputs:         [DJDJ/VDJ]_*.npy [binCount]
-    outputs:        PDF_[DJDJ/VDJ]_*.npy binCenters_[DJDJ/VDJ]_*.npy
-
-plotPDF.py
-    dependencies:   [separations.py / separationDistribution.py]
-    inputs:         [red/blue/green/all] {numWT numJQ1 numA485} [ [DJDJ/VDJ]_*.npy ] { [DJDJ/VDJ]_*.npy ...}
-        Only require {numWT numJQ1 numA485} if using [all]
-        Soft dependency on separationDistribution.py .  If you haven't run it, the plotting script will do so, with a default binCount of 50
-    outputs:        PDF.pdf PDF.pickle
