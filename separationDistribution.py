@@ -39,7 +39,7 @@ def separationDistribution(data, binCount):
     binEdges = np.linspace(minSep, maxSep, num=binCount+1)
     binCenters = (binEdges[1:] + binEdges[0:binCount]) / 2.0
 
-    kernel = scipy.stats.gaussian_kde(separations,bw_method=0.2)
+    kernel = scipy.stats.gaussian_kde(separations,bw_method=0.4)
 
     PDF = kernel.evaluate(binCenters)
 
