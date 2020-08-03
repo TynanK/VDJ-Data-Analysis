@@ -1,5 +1,5 @@
 # VDJ-Data-Analysis
-Code for analysing experimental data
+Code for analyzing experimental data
 
 So far, I've written code that can do the following:
 
