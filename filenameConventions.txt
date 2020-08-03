@@ -66,8 +66,8 @@ plotTrajectory.py
 
 plotVAC.py:
     dependencies:   [VAC.py / ensembleVAC.py]
-    inputs:         [stats_VAC_*.npy] {stats_VAC_*.npy ...}
-        Can have as many stats_VAC_*.npy as you want, and the filename format doesn't actually matter.
+    inputs:         numDelta minDelta maxDelta maxDt [filenames]
+        See plotVAC.py for detailed explanation in header
     outputs:        VAC.pdf
 
 separationDistribution.py
