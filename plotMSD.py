@@ -77,6 +77,6 @@ if __name__ == "__main__":
     ax.legend(loc = 'upper left')
     fig.tight_layout()
     
-    fig.savefig("MSD.pdf")
+    fig.savefig("MSD.png")
     # pickle.dump(ax, file('MSD.pickle', 'w')) # Can reload this using pickle.load('MSD.pickle'), then plt.show()
     plt.close(fig)

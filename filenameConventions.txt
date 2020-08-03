@@ -49,26 +49,26 @@ plotMSD.py:
     inputs:         {red/blue/green/all} [stats_MSD_*.npy] {stats_MSD_*.npy ...}
         Can have as many stats_MSD_*.npy as you want, and the filename format doesn't actually matter.
         {red/blue/green/all} are color options. If you use all, you have to follow it with three integers representing the number of each color.
-    outputs:        MSD.pdf
+    outputs:        MSD.png
 
 plotSeparationDistribution.py
     dependencies:   [separations.py / separationDistribution.py]
     inputs:         [red/blue/green/all] {numWT numJQ1 numA485} [ [DJDJ/VDJ]_*.npy ] { [DJDJ/VDJ]_*.npy ...}
         Only require {numWT numJQ1 numA485} if using [all]
         Soft dependency on separationDistribution.py .  If you haven't run it, the plotting script will do so, with a default binCount of 500
-    outputs:        PDF_trajectory.pdf
+    outputs:        PDF_trajectory.png
 
 plotTrajectory.py
     dependencies:   separations.py
     inputs:         [red/blue/green/all] {numWT numJQ1 numA485} [ [DJDJ/VDJ]_*.npy ] { [DJDJ/VDJ]_*.npy ...}
         Only require {numWT numJQ1 numA485} if using [all]. And why would you ever do that?
-    outputs:        Trajectory.pdf         
+    outputs:        Trajectory.png        
 
 plotVAC.py:
     dependencies:   [VAC.py / ensembleVAC.py]
     inputs:         numDelta minDelta maxDelta maxDt [filenames]
         See plotVAC.py for detailed explanation in header
-    outputs:        VAC.pdf
+    outputs:        VAC.png
 
 separationDistribution.py
     dependencies:   separations.py

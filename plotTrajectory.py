@@ -74,5 +74,5 @@ if __name__ == "__main__":
     ax.legend(loc='upper right')
     fig.tight_layout()
     
-    fig.savefig("Trajectory.pdf")
+    fig.savefig("Trajectory.png")
     plt.close(fig)
