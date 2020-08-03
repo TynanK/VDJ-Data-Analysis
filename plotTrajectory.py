@@ -71,7 +71,7 @@ if __name__ == "__main__":
         sepsName = fiMa.stripExtension(filenames[index])
         fig, ax = plotTrajectory(seps, fig, ax, colors, sepsName, index)
     
-    ax.legend()
+    ax.legend(loc='upper right')
     fig.tight_layout()
     
     fig.savefig("Trajectory.pdf")

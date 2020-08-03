@@ -74,7 +74,7 @@ if __name__ == "__main__":
         statsName = fiMa.stripPrefix(fiMa.stripExtension(filenames[index]))
         fig, ax = plotMSD(stats, fig, ax, colors, statsName, index)
     
-    ax.legend()
+    ax.legend(loc = 'upper left')
     fig.tight_layout()
     
     fig.savefig("MSD.pdf")

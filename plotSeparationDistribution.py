@@ -82,7 +82,7 @@ if __name__ == "__main__":
         pdfName = fiMa.stripExtension(filenames[index])
         fig, ax = plotSeparationDistribution(pdf, binCenters, fig, ax, colors, pdfName, index)
     
-    ax.legend()
+    ax.legend(loc = 'upper right')
     fig.tight_layout()
     
     fig.savefig("PDF_trajectory.pdf")
