@@ -8,6 +8,8 @@ import numpy as np
 import sys, statistics, math
 import arrayManipulations as arMa
 
+msd_err = 0.02
+
 def singleTrajectoryAnalysis(filename):
     data = np.load(filename)
     stats, sd_all, dt_all = MSD(data)

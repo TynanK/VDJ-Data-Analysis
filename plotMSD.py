@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     for index in range(len(filenames)):
         stats = np.load(filenames[index])
-        statsName = fiMa.stripExtension(filenames[index])
+        statsName = fiMa.stripPrefix(fiMa.stripExtension(filenames[index]))
         fig, ax = plotMSD(stats, fig, ax, colors, statsName, index)
     
     ax.legend()

@@ -9,20 +9,83 @@ import numpy as np
 import sys, statistics, os
 import MSD
 import arrayManipulations as arMa
+import math
 
+msd_err = 0.02
 
 def ensembleAnalysis(filenames, dataType):
-    stats, sd_ensemble, dt_ensemble = ensembleMSD(filenames)
+    stats = ensembleMSD(filenames)
     np.save("stats_MSD_" + dataType + "_ensemble.npy", stats)
-    dt_np = np.array(dt_ensemble)
-    np.save("dt_MSD_" + dataType + "_ensemble.npy", dt_np)
-    sd_np = arMa.makeArray(sd_ensemble)
-    np.save("sd_MSD_" + dataType + "_ensemble.npy", sd_np)
-    return stats, sd_ensemble, dt_ensemble
+    #dt_np = np.array(dt_ensemble)
+    #np.save("dt_MSD_" + dataType + "_ensemble.npy", dt_np)
+    #sd_np = arMa.makeArray(sd_ensemble)
+    #np.save("sd_MSD_" + dataType + "_ensemble.npy", sd_np)
+    return stats
+    
+def ensembleMSD(filenames):
+    currentDir = os.getcwd()
+    stats_ensemble = []
+    dt_ensemble = []
+    dt_mean_ensemble = []
+    dt_std_ensemble = []
+    means_ensemble = []
+    stds_ensemble = []
+    for file1 in filenames:
+        stats_filename = currentDir + "/stats_" + file1
+        if os.path.isfile(stats_filename):
+            stats = np.load(stats_filename)
+            dt_data = stats[:,2]
+        else:
+            stats, _, dt_data = MSD.singleTrajectoryAnalysis(file1)
+        
+        lenDt = len(dt_data)
+        for dtIndex in range(lenDt):
+            stats_ensemble, dt_ensemble = arMa.dataInsert(stats_ensemble, dt_ensemble, stats[dtIndex,:], dt_data[dtIndex])
+            means_ensemble, dt_mean_ensemble = arMa.dataInsert(means_ensemble, dt_mean_ensemble, stats[dtIndex,0], dt_data[dtIndex])
+            stds_ensemble, dt_std_ensemble = arMa.dataInsert(stds_ensemble, dt_std_ensemble, stats[dtIndex,1], dt_data[dtIndex])
+
+    # So now, stats_ensemble is a list of lists of numpy arrays, and dt_ensemble is a list
+    # The mean of mean SDs is simple to calculate. The error will be the errors summed in quadrature, divided by the number. Do this for every dt.
+
+    assert (dt_mean_ensemble == dt_std_ensemble), "Something went wrong"
+
+    lenDt = len(dt_ensemble)
+    finalStats = np.zeros((lenDt, 3))
+    for a in range(lenDt):
+        finalStats[a,2] = dt_ensemble[a]
+        finalStats[a,0] = 3 * statistics.mean(means_ensemble[a])
+        if len(stats_ensemble[a][:][1]) != 0:
+            finalStats[a,1] = 3 * sumQuad(stds_ensemble[a]) / len(stds_ensemble[a])
+        else:
+            finalStats[a,1] = 0.0
+    
+    # Oho, but what's this? We have some experimental error that makes the y-intercept non-zero!
+    # I tried assuming it's the same for every cell type, but that might be incorrect.
+    # We'll extrapolate it from a linear fit of the first 7 non-zero dts, then subtract it.
+
+    if dt_ensemble[0] == 0:
+        dt_slice = dt_ensemble[1:8]
+        statSlice = finalStats[1:8,0]
+    else:
+        dt_slice = dt_ensemble[0:7]
+        statSlice = finalStats[0:7,0]
+    
+    linearFit = np.polyfit(dt_slice, statSlice, 1)
+    intercept = linearFit[0]
+    finalStats[:,0] = finalStats[:,0] - intercept
+
+    
+    return finalStats
+    
+def sumQuad(data):
+    sumQ = 0
+    for a in range(len(data)):
+        sumQ += math.pow(data[a],2)
+    return math.sqrt(sumQ)
     
 
 
-def ensembleMSD(filenames):
+def ensembleMSDalltogether(filenames):
     currentDir = os.getcwd()
     sd_ensemble = []
     dt_ensemble = []
