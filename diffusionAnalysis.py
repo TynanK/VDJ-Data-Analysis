@@ -10,7 +10,7 @@ import sys, statistics, math
 
 localizationError = 0.02 # Units of um^2
 
-def diffusionAnalysis(stats):
+def diffusionAnalysis(stats, dt_min, dt_max):
 
     (i,j) = stats.shape
     logStats = np.zeros((i,j))
@@ -37,7 +37,7 @@ def diffusionAnalysis(stats):
     Alpha = B
     dAlpha = dB
 
-    diffStats = np.array([Alpha, D, dAlpha, dD])
+    diffStats = np.array([Alpha, dAlpha, D, dD, dt_min, dt_max])
 
     return diffStats
 
@@ -140,7 +140,7 @@ if __name__ == "__main__":
                 maxdex = i-a
                 break
     
-    diffStats = diffusionAnalysis(stats[mindex:maxdex,:])
+    diffStats = diffusionAnalysis(stats[mindex:maxdex,:], dt_min, dt_max)
     np.save(prefix + "_" + filename, diffStats)
 
     print(diffStats)

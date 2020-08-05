@@ -110,10 +110,26 @@ def ensembleMSDalltogether(filenames):
     stats = np.zeros((len(dt_ensemble), 3)) # msd, std, dt
     for a in range(len(dt_ensemble)):
         stats[a,2] = dt_ensemble[a]
-        stats[a,0] = statistics.mean(sd_ensemble[a])
-        stats[a,1] = statistics.stdev(sd_ensemble[a])
+        stats[a,0] = 3 * statistics.mean(sd_ensemble[a])
+        stats[a,1] = 3 * statistics.stdev(sd_ensemble[a])
 
-    return stats, sd_ensemble, dt_ensemble
+    # Oho, but what's this? We have some experimental error that makes the y-intercept non-zero!
+    # I tried assuming it's the same for every cell type, but that might be incorrect.
+    # We'll extrapolate it from a linear fit of the first 7 non-zero dts, then subtract it.
+
+    if dt_ensemble[0] == 0:
+        dt_slice = dt_ensemble[1:8]
+        statSlice = stats[1:8,0]
+    else:
+        dt_slice = dt_ensemble[0:7]
+        statSlice = stats[0:7,0]
+    
+    linearFit = np.polyfit(dt_slice, statSlice, 1)
+    intercept = linearFit[0]
+    stats[:,0] = stats[:,0] - intercept
+
+
+    return stats
 
 if __name__ == "__main__":
     argc = len(sys.argv)

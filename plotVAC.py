@@ -21,7 +21,7 @@ import filenameManipulations as fiMa
 import arrayManipulations as arMa
 import plotManipulations as plMa
 
-figure_size = (10,10)
+figure_size = (10,7)
 
 def plotVAC(fig, ax, x_vals, y_vals, statsName, colorIndex, colors):
 

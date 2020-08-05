@@ -15,6 +15,8 @@
 
 # Sorry it's so complicated.
 
+# THE AXIS LIMITS HAVE TEMPORARILY BEEN HARD-CODED!!!!
+
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -82,6 +84,10 @@ if __name__ == "__main__":
         pdfName = fiMa.stripExtension(filenames[index])
         fig, ax = plotSeparationDistribution(pdf, binCenters, fig, ax, colors, pdfName, index)
     
+    # Temporary, just for presentation
+    ax.set_xlim(0.0, 2.25)
+    ax.set_ylim(0, 9)
+
     ax.legend(loc = 'upper right')
     fig.tight_layout()
     
