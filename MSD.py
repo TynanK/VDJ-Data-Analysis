@@ -44,7 +44,7 @@ def MSD(data):
         stats[a,2] = dt_all[a]
         stats[a,0] = statistics.mean(sd_all[a])
         if len(sd_all[a]) >= 2:
-            stats[a,1] = statistics.stdev(sd_all[a])
+            stats[a,1] = statistics.stdev(sd_all[a]) / math.sqrt(len(sd_all[a])) # The standard deviation of the mean is the standard deviation of samples divided by the square root of the sample count
 
     return stats, sd_all, dt_all
 

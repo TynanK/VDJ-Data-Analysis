@@ -34,6 +34,7 @@ def plotMSD(stats, fig, ax, colors, statsName, intLabel):
     ax.set_ylabel(u"MSD [\u03BCm^2]")
     ax.set_title("Mean-Squared Displacement vs Time")
     ax.set_xlim(2, 200)
+    #ax.set_ylim(0.01, 1.00)
     fig.tight_layout()
 
     return fig, ax
