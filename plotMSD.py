@@ -39,13 +39,13 @@ def plotMSD(stats, fig, ax, colors, statsName, intLabel):
 
     return fig, ax
 
-def plotDiffFit(diffFit, fig, ax):
+def plotDiffFit(diffFit, fig, ax, diffLabel='_nolegend_', diffColor='k'):
     xvals = np.linspace(diffFit[4], diffFit[5], num=100, dtype=float)
     yvals = np.zeros(xvals.size)
     for a in range(xvals.size):
         yvals[a] = diffusionEquation(diffFit[0], diffFit[2], xvals[a])
     
-    ax.loglog(xvals, yvals, label='_nolegend_', marker='None', color='k', linestyle='--')
+    ax.loglog(xvals, yvals, label=diffLabel, marker='None', color=diffColor, linestyle='--')
 
     return fig, ax
 
@@ -104,6 +104,11 @@ if __name__ == "__main__":
             diffFit = np.load(diffFilename)
             fig, ax = plotDiffFit(diffFit, fig, ax)
             diffFits.append([statsLabel, colors[index]] + list(diffFit[0:4]))
+    
+
+    theoreticalFreeFit = np.array([0.5, 0.0, 0.0026, 0.0000, 10.0, 100.0])
+    fig, ax = plotDiffFit(theoreticalFreeFit, fig, ax, 'Theoretical Unconstrained Chain', 'cyan')
+
 
     numFits = len(diffFits)
     diffRowColors = []
