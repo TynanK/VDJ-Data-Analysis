@@ -155,12 +155,14 @@ def ensembleMSDalltogether(filenames):
         linearFit = np.polyfit(dt_slice, statSlice, 1)
         intercept = linearFit[0]
         stats[1:,0] = stats[1:,0] - intercept
+        stats[1:,1] = stats[1:,1] + intercept
     else:
         dt_slice = dt_ensemble[0:7]
         statSlice = stats[0:7,0]
         linearFit = np.polyfit(dt_slice, statSlice, 1)
         intercept = linearFit[0]
         stats[:,0] = stats[:,0] - intercept
+        stats[:,1] = stats[:,1] + intercept
 
     return stats
 
