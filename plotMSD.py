@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 import sys, statistics, math, pickle, os
 import filenameManipulations as fiMa
 import plotManipulations as plMa
+import arrayManipulations as arMa
 
 figure_size = (10,7)
 
@@ -32,24 +33,58 @@ def plotMSD(stats, fig, ax, colors, statsName, intLabel):
     ax.loglog(stats[:,2], stats[:,0], label=statsName, color=colors[intLabel], marker='.', linestyle='None')
     ax.fill_between(stats[:,2], stats[:,0] + stats[:,1], stats[:,0] - stats[:,1], alpha=0.2, color=colors[intLabel])
     ax.set_xlabel("Time [s]")
-    ax.set_ylabel(u"MSD [\u03BCm^2]")
+    ax.set_ylabel(u"MSD [\u03BCm\u00B2]")
     ax.set_title("Mean-Squared Displacement vs Time")
-    ax.set_xlim(2, 200)
-    #ax.set_ylim(0.01, 1.00)
+    #ax.set_xlim(2, 200)
+    #ax.set_ylim(0.02, 0.35)
     fig.tight_layout()
 
     return fig, ax
 
 def plotDiffFit(diffFit, fig, ax, diffLabel='_nolegend_', diffColor='k'):
-    xvals = np.linspace(diffFit[4], diffFit[5], num=100, dtype=float)
+    numPoints = 100 # I just set this manually. No real reason to change though
+    xvals = np.linspace(diffFit[4], diffFit[5], num=numPoints, dtype=float)
     yvals = np.zeros(xvals.size)
     for a in range(xvals.size):
         yvals[a] = diffusionEquation(diffFit[0], diffFit[2], xvals[a])
     
     ax.loglog(xvals, yvals, label=diffLabel, marker='None', color=diffColor, linestyle='--')
 
+    annotateString = u"\u03B1 = {0:3.2f}".format(diffFit[0])
+    annotateIndex = int(numPoints * 0.7)
+    annotateXY = (xvals[annotateIndex], yvals[annotateIndex])
+    annotateXYtext = (0, -50)
+    ax.annotate(annotateString, annotateXY, xytext=annotateXYtext, xycoords='data', textcoords='offset pixels', color=diffFit[7])
+
     return fig, ax
 
+def find_nearest(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return idx
+
+def setXlimAndScale(fig, ax, xmin, xmax):
+    ymax = sys.float_info.min
+    ymin = sys.float_info.max
+    lines = ax.lines
+    for line in lines:
+        xdata = list(line.get_xdata())
+        ydata = list(line.get_ydata())
+        ydata, xdata = arMa.sort2D(ydata, xdata)
+        mindex = find_nearest(xdata, xmin)
+        maxdex = find_nearest(xdata, xmax)
+        clippedDataY = ydata[mindex:maxdex]
+        thisYmax = max(clippedDataY)
+        thisYmin = min(clippedDataY)
+        if thisYmax > ymax:
+            ymax = thisYmax
+        if thisYmin < ymin:
+            ymin = thisYmin
+
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylim(ymin, ymax)
+
+    return fig, ax
 
 def diffusionEquation(alpha, D, t):
     return 6*D*math.pow(t,alpha)
@@ -84,15 +119,19 @@ if __name__ == "__main__":
         for a in range(2,argc):
             filenames.append(str(sys.argv[a]))
     
-    fig, ax = plt.subplots(figsize=figure_size)
+    fig, ax = plt.subplots(figsize=figure_size, dpi=300)
 
     diffFits = []
     currentDir = os.getcwd()
+    allPrefixes = []
+    allStats = []
     for index in range(len(filenames)):
         stats = np.load(filenames[index])
+        allStats.append(stats)
         statsName = fiMa.stripPrefix(fiMa.stripExtension(filenames[index]))
 
         statsNamePrefix = fiMa.extractPrefix(statsName)
+        allPrefixes.append(statsNamePrefix)
         if statsNamePrefix == "VDJ" or statsNamePrefix == "DJDJ":
             statsNameSuffix = fiMa.stripPrefix(statsName)
             statsLabel = "{0:{width}s}, {1:4s}".format(statsNameSuffix, statsNamePrefix, width=4) # COME BACK AND FIX THIS WIDTH LATER
@@ -102,30 +141,41 @@ if __name__ == "__main__":
         fig, ax = plotMSD(stats, fig, ax, colors, statsLabel, index)
         diffFilename = currentDir + "/diff_" + filenames[index]
         if os.path.isfile(diffFilename):
-            diffFit = np.load(diffFilename)
+            diffFit = list(np.load(diffFilename)) + [statsLabel, colors[index]]
             fig, ax = plotDiffFit(diffFit, fig, ax)
-            diffFits.append([statsLabel, colors[index]] + list(diffFit[0:4]))
+            diffFits.append(diffFit)
     
+    if "VDJ" in allPrefixes:
+        theoreticalFreeVDJ = [0.5, 0.0, 0.0026, 0.0000, 10.0, 100.0, 'Free Intrachain Diffusion', 'orange']
+        fig, ax = plotDiffFit(theoreticalFreeVDJ, fig, ax, theoreticalFreeVDJ[6], theoreticalFreeVDJ[7])
 
-    theoreticalFreeFit = np.array([0.5, 0.0, 0.0026, 0.0000, 10.0, 100.0])
-    fig, ax = plotDiffFit(theoreticalFreeFit, fig, ax, 'Theoretical Unconstrained Chain', 'cyan')
+    if "DJDJ" in allPrefixes:
+        theoreticalFreeDJDJ = [1.0, 0.0, 0.0034, 0.0000, 10.0, 100.0, 'Free Interchain Diffusion', 'purple']
+        fig, ax = plotDiffFit(theoreticalFreeDJDJ, fig, ax, theoreticalFreeDJDJ[6], theoreticalFreeDJDJ[7])
 
 
     numFits = len(diffFits)
     diffRowColors = []
     diffRowLabels = []
-    diffColLabels = [" ", u"\u03B1", u"D [\u03BCm^2 / s]"]
+    diffColLabels = [" ", u"\u03B1", u"D [\u03BCm\u00B2 s\u207B\u00B9]"]
     diffCellText = []
     for a in range(numFits):
         diffRowColors.append(diffFits[a][1])
         diffRowLabels.append(diffFits[a][0])
-        alphaString = u"{0:3.2f} \u00B1 {1:3.2f}".format(diffFits[a][2], diffFits[a][3])
-        DString = u"{0:5.4f} \u00B1 {1:5.4f}".format(diffFits[a][4], diffFits[a][5])
-        diffCellText.append([diffFits[a][0], alphaString, DString])
+        alphaString = u"{0:3.2f} \u00B1 {1:3.2f}".format(diffFits[a][0], diffFits[a][1])
+        DString = u"{0:5.4f} \u00B1 {1:5.4f}".format(diffFits[a][2], diffFits[a][3])
+        diffCellText.append([diffFits[a][6], alphaString, DString])
 
-    ax.table(cellText=diffCellText, cellLoc='center', colWidths=[0.1, 0.2, 0.2], colLabels=diffColLabels, loc='upper left', edges='BR')
+    fig, ax = setXlimAndScale(fig, ax, 2.0, 200.0)
+
+    table = ax.table(cellText=diffCellText, cellLoc='center', colWidths=[0.1, 0.2, 0.2], colLabels=diffColLabels, loc='upper left', edges='BR')
+    bottomLeftCell = table[2,0]
+    print(bottomLeftCell.xy)
+    print(bottomLeftCell.width)
+    print(bottomLeftCell.height)
     
-    ax.legend(loc = 'upper right')
+
+    ax.legend(loc = 'center left')
     fig.tight_layout()
     
     fig.savefig("MSD.png")
