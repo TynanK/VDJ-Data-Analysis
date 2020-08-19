@@ -148,11 +148,11 @@ if __name__ == "__main__":
     if "VDJ" in allPrefixes:
         theoreticalFreeVDJ = [0.5, 0.0, 0.0026, 0.0000, 10.0, 100.0, 'Free Intrachain Diffusion', 'orange']
         fig, ax = plotDiffFit(theoreticalFreeVDJ, fig, ax, theoreticalFreeVDJ[6], theoreticalFreeVDJ[7])
-
+    '''
     if "DJDJ" in allPrefixes:
         theoreticalFreeDJDJ = [1.0, 0.0, 0.0034, 0.0000, 10.0, 100.0, 'Free Interchain Diffusion', 'purple']
         fig, ax = plotDiffFit(theoreticalFreeDJDJ, fig, ax, theoreticalFreeDJDJ[6], theoreticalFreeDJDJ[7])
-
+    '''
 
     numFits = len(diffFits)
     diffRowColors = []
