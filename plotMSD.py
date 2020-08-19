@@ -30,6 +30,7 @@ figure_size = (10,7)
 def plotMSD(stats, fig, ax, colors, statsName, intLabel):
     
     ax.loglog(stats[:,2], stats[:,0], label=statsName, color=colors[intLabel], marker='.', linestyle='None')
+    ax.fill_between(stats[:,2], stats[:,0] + stats[:,1], stats[:,0] - stats[:,1], alpha=0.2, color=colors[intLabel])
     ax.set_xlabel("Time [s]")
     ax.set_ylabel(u"MSD [\u03BCm^2]")
     ax.set_title("Mean-Squared Displacement vs Time")
