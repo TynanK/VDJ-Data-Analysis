@@ -169,11 +169,7 @@ if __name__ == "__main__":
     fig, ax = setXlimAndScale(fig, ax, 2.0, 200.0)
 
     table = ax.table(cellText=diffCellText, cellLoc='center', colWidths=[0.1, 0.2, 0.2], colLabels=diffColLabels, loc='upper left', edges='BR')
-    bottomLeftCell = table[2,0]
-    print(bottomLeftCell.xy)
-    print(bottomLeftCell.width)
-    print(bottomLeftCell.height)
-    
+    bottomLeftCell = table[2,0]   
 
     ax.legend(loc = 'center left')
     fig.tight_layout()
