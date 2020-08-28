@@ -164,6 +164,8 @@ def ensembleMSDalltogether(filenames):
         stats[:,0] = stats[:,0] - intercept
         stats[:,1] = stats[:,1] + intercept
 
+    # Stats: [dtIndex] [MSD | stddev | dt]
+
     return stats
 
 if __name__ == "__main__":

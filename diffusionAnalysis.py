@@ -3,7 +3,6 @@
 # Date: July 29, 2020
 
 # Weighted least-squares linear regression to determine Diffusion Coefficient and power law
-# TO-DO: Incorporate measurement localization error. Currently only using random deviation.
 
 import numpy as np
 import sys, statistics, math
