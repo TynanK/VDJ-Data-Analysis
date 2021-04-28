@@ -155,21 +155,22 @@ if __name__ == "__main__":
     '''
 
     numFits = len(diffFits)
-    diffRowColors = []
-    diffRowLabels = []
-    diffColLabels = [" ", u"\u03B1", u"D [\u03BCm\u00B2 s\u207B\u00B9]"]
-    diffCellText = []
-    for a in range(numFits):
-        diffRowColors.append(diffFits[a][1])
-        diffRowLabels.append(diffFits[a][0])
-        alphaString = u"{0:3.2f} \u00B1 {1:3.2f}".format(diffFits[a][0], diffFits[a][1])
-        DString = u"{0:5.4f} \u00B1 {1:5.4f}".format(diffFits[a][2], diffFits[a][3])
-        diffCellText.append([diffFits[a][6], alphaString, DString])
+    if numFits != 0:
+        diffRowColors = []
+        diffRowLabels = []
+        diffColLabels = [" ", u"\u03B1", u"D [\u03BCm\u00B2 s\u207B\u00B9]"]
+        diffCellText = []
+        for a in range(numFits):
+            diffRowColors.append(diffFits[a][1])
+            diffRowLabels.append(diffFits[a][0])
+            alphaString = u"{0:3.2f} \u00B1 {1:3.2f}".format(diffFits[a][0], diffFits[a][1])
+            DString = u"{0:5.4f} \u00B1 {1:5.4f}".format(diffFits[a][2], diffFits[a][3])
+            diffCellText.append([diffFits[a][6], alphaString, DString])
 
     fig, ax = setXlimAndScale(fig, ax, 2.0, 200.0)
-
-    table = ax.table(cellText=diffCellText, cellLoc='center', colWidths=[0.1, 0.2, 0.2], colLabels=diffColLabels, loc='upper left', edges='BR')
-    bottomLeftCell = table[2,0]   
+    if numFits != 0:
+        table = ax.table(cellText=diffCellText, cellLoc='center', colWidths=[0.1, 0.2, 0.2], colLabels=diffColLabels, loc='upper left', edges='BR')
+        bottomLeftCell = table[2,0]   
 
     ax.legend(loc = 'center left')
     fig.tight_layout()
