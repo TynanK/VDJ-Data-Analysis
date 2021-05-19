@@ -26,7 +26,7 @@ import filenameManipulations as fiMa
 import plotManipulations as plMa
 import arrayManipulations as arMa
 
-figure_size = (10,7)
+figure_size = (7.5,5.25)
 
 def plotMSD(stats, fig, ax, colors, statsName, intLabel):
     
@@ -170,9 +170,9 @@ if __name__ == "__main__":
     fig, ax = setXlimAndScale(fig, ax, 2.0, 200.0)
     if numFits != 0:
         table = ax.table(cellText=diffCellText, cellLoc='center', colWidths=[0.1, 0.2, 0.2], colLabels=diffColLabels, loc='upper left', edges='BR')
-        bottomLeftCell = table[2,0]   
+        #bottomLeftCell = table[2,0]   
 
-    ax.legend(loc = 'center left')
+    ax.legend(loc = 'lower right')
     fig.tight_layout()
     
     fig.savefig("MSD.png")
