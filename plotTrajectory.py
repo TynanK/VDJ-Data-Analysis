@@ -29,7 +29,10 @@ def plotTrajectory(seps, fig, ax, colors, sepsName, intLabel):
     ax.plot(seps[:,1], seps[:,0], label=sepsName, color=colors[intLabel], marker='None', linestyle='-')
     ax.set_xlabel("Time [s]")
     ax.set_ylabel(u"Separation [\u03BCm]")
-    ax.set_title(dataType + " Separation vs Time")
+    #ax.set_title(dataType + " Separation vs Time")
+    # THIS IS A TEMPORARY CHANGE TO MAKE A PARTICULAR PLOT
+    # COMMENT IT BACK OUT AFTER YOU'RE DONE
+    ax.set_title("Separation vs Time")
     fig.tight_layout()
 
     return fig, ax
@@ -71,7 +74,8 @@ if __name__ == "__main__":
         sepsName = fiMa.stripExtension(filenames[index])
         fig, ax = plotTrajectory(seps, fig, ax, colors, sepsName, index)
     
-    ax.legend(loc='upper right')
+    #TEMPORARILY REMOVED THE LEGEND. UNCOMMENT THIS ONCE THE PARTICULAR PLOT IS DONE.
+    #ax.legend(loc='upper right')
     fig.tight_layout()
     
     fig.savefig("Trajectory.png")
