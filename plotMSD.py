@@ -21,12 +21,13 @@ import matplotlib
 matplotlib.use("Agg")
 matplotlib.rc('font', family='monospace')
 import matplotlib.pyplot as plt
-import sys, statistics, math, pickle, os
+import sys, statistics, math, pickle, os, fnmatch
 import filenameManipulations as fiMa
 import plotManipulations as plMa
 import arrayManipulations as arMa
 
-figure_size = (7.5,5.25)
+#figure_size = (7.5,5.25)
+figure_size = (10, 7)
 
 def plotMSD(stats, fig, ax, colors, statsName, intLabel):
     
@@ -146,9 +147,11 @@ if __name__ == "__main__":
         for entry in listOfFiles:
             if fnmatch.fnmatch(entry,diffFilePattern):
                 fitLabel = entry[len(diffPrefix):-len(filenames[index])]
-                if fitLabel[0]="_":
+                if fitLabel[0]=="_":
                     fitLabel = fitLabel[1:]
-                diffFit = list(np.load(entry)) + [statsLabel+"_"+fitLabel, colors[index]]
+                if fitLabel[-1]=="_":
+                    fitLabel = fitLabel[:-1]
+                diffFit = list(np.load(entry)) + [fitLabel, colors[index]]
                 fig, ax = plotDiffFit(diffFit, fig, ax)
                 diffFits.append(diffFit)
     
@@ -177,13 +180,13 @@ if __name__ == "__main__":
     fig, ax = setXlimAndScale(fig, ax, 2.0, 200.0)
     if numFits != 0:
         table = ax.table(cellText=diffCellText, cellLoc='center', colWidths=[0.1, 0.2, 0.2], colLabels=diffColLabels, loc='upper left', edges='BR')
-        table.auto_set_font_size(True)
+        table.auto_set_font_size(False)
         table.set_fontsize(8)
         table.scale(1.3, 1.3)
         #bottomLeftCell = table[2,0]   
 
     ax.legend(loc = 'lower right')
-    ax.set_ylim(0.04, 0.35)
+    ax.set_ylim(0.03, 0.5)
     fig.tight_layout()
     
     fig.savefig("MSD.png")
