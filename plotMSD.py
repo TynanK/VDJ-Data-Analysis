@@ -139,11 +139,18 @@ if __name__ == "__main__":
             statsLabel = statsName
 
         fig, ax = plotMSD(stats, fig, ax, colors, statsLabel, index)
-        diffFilename = currentDir + "/diff_" + filenames[index]
-        if os.path.isfile(diffFilename):
-            diffFit = list(np.load(diffFilename)) + [statsLabel, colors[index]]
-            fig, ax = plotDiffFit(diffFit, fig, ax)
-            diffFits.append(diffFit)
+        diffPrefix = "diff"
+        diffFilePattern = diffPrefix+"*"+filenames[index]
+        listOfFiles = os.listdir('.')
+
+        for entry in listOfFiles:
+            if fnmatch.fnmatch(entry,diffFilePattern):
+                fitLabel = entry[len(diffPrefix):-len(filenames[index])]
+                if fitLabel[0]="_":
+                    fitLabel = fitLabel[1:]
+                diffFit = list(np.load(entry)) + [statsLabel+"_"+fitLabel, colors[index]]
+                fig, ax = plotDiffFit(diffFit, fig, ax)
+                diffFits.append(diffFit)
     
     if "VDJ" in allPrefixes:
         theoreticalFreeVDJ = [0.5, 0.0, 0.0026, 0.0000, 10.0, 100.0, 'Free Intrachain Diffusion', 'orange']
