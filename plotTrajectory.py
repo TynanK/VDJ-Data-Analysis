@@ -74,6 +74,12 @@ if __name__ == "__main__":
         sepsName = fiMa.stripExtension(filenames[index])
         fig, ax = plotTrajectory(seps, fig, ax, colors, sepsName, index)
     
+    lineX = np.linspace(0.0, 400.0)
+    lineY = np.zeros(lineX.shape)
+    for a in range(lineX.size):
+        lineY[a] = 0.126
+    ax.plot(lineX, lineY, linestyle='--', color='k',label="Encounter Threshold", marker='None')
+
     #TEMPORARILY REMOVED THE LEGEND. UNCOMMENT THIS ONCE THE PARTICULAR PLOT IS DONE.
     #ax.legend(loc='upper right')
     fig.tight_layout()
