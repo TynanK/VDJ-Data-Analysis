@@ -45,3 +45,11 @@ def extractPrefix(filename):
 
 def stripPrefix(filename):
     return swapPrefix(filename, '')
+
+def extractExtension(filename):
+    i = len(filename)
+    for a in range(i):
+        if filename[i-1-a] == '.':
+            extension = filename[i-1-a:]
+            break
+    return extension
