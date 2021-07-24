@@ -11,8 +11,13 @@ import sys, csv
 import filenameManipulations as fiMa
 
 def importData(filename, timestep):
-    timeStepColumn = getLastColumnNumber(filename)
-    rawData = np.genfromtxt(filename, delimiter=',', usecols=(0,1,2,timeStepColumn), missing_values='', filling_values=-1)
+    extension = fiMa.extractExtension(filename)
+    if extension == "csv":
+        timeStepColumn = getLastColumnNumber(filename)
+        rawData = np.genfromtxt(filename, delimiter=',', usecols=(0,1,2,timeStepColumn), missing_values='', filling_values=-1)
+    elif extension == "txt":
+        timeStepColumn = 3
+        rawData = np.genfromtxt(filename, delimiter='   ', usecols=(0,1,2,timeStepColumn), missing_values='', filling_values=-1)
     flaggedData = flagMissing(rawData)
     trimmedData = trimMissingEnds(flaggedData)
     interpolatedData = interpolateMissing(trimmedData)
