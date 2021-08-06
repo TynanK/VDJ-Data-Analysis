@@ -18,6 +18,8 @@ def importData(filename, timestep):
     elif extension == "txt":
         timeStepColumn = 3
         rawData = np.genfromtxt(filename, delimiter='   ', usecols=(0,1,2,timeStepColumn), missing_values='', filling_values=-1)
+    else:
+        print(extension)
     flaggedData = flagMissing(rawData)
     trimmedData = trimMissingEnds(flaggedData)
     interpolatedData = interpolateMissing(trimmedData)

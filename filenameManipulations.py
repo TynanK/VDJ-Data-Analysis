@@ -50,6 +50,6 @@ def extractExtension(filename):
     i = len(filename)
     for a in range(i):
         if filename[i-1-a] == '.':
-            extension = filename[i-1-a:]
+            extension = filename[i-a:]
             break
     return extension
