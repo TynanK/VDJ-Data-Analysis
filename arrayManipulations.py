@@ -17,6 +17,13 @@ def makeArray(ListOfLists):
             data[a,b] = ListOfLists[a][b]
     return data
 
+def smooth(data, binSize):
+    (i,j) = data.shape
+    smoothData = np.zeros((i-binSize+1,j)) 
+    for a in range(i-binSize+1):
+        smoothData[a,:] = np.mean(data[a:a+binSize,:], axis=0)
+    return smoothData
+
 def makeArray3D(ListofListsofLists):
     len0 = len(ListofListsofLists)
     len1 = 0
