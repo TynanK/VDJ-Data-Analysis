@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 import sys, statistics, math, pickle
 import filenameManipulations as fiMa
 import plotManipulations as plMa
+import arrayManipulations as arMa
+
 
 figure_size = (10,7)
 
@@ -68,21 +70,35 @@ if __name__ == "__main__":
             filenames.append(str(sys.argv[a]))
     
     fig, ax = plt.subplots(figsize=figure_size)
+    fig1, ax1 = plt.subplots(figsize=figure_size)
 
     for index in range(len(filenames)):
         seps = np.load(filenames[index])
+        smoothSeps = arMa.smooth(seps,5)
         sepsName = fiMa.stripExtension(filenames[index])
         fig, ax = plotTrajectory(seps, fig, ax, colors, sepsName, index)
+        fig1, ax1 = plotTrajectory(smoothSeps, fig1, ax1, colors, sepsName, index)
+        
     
     lineX = np.linspace(0.0, 400.0)
     lineY = np.zeros(lineX.shape)
     for a in range(lineX.size):
         lineY[a] = 0.126
     ax.plot(lineX, lineY, linestyle='--', color='k',label="Encounter Threshold", marker='None')
+    ax1.plot(lineX, lineY, linestyle='--', color='k',label="Encounter Threshold", marker='None')
+
+    #TEMPORARILY HARD-CODED YLIMS. Feel free to revert or adjust if you need to.
+    ax.set_ylim(0.0, 2.0)
+    ax1.set_ylim(0.0, 2.0)
 
     #TEMPORARILY REMOVED THE LEGEND. UNCOMMENT THIS ONCE THE PARTICULAR PLOT IS DONE.
     #ax.legend(loc='upper right')
+
     fig.tight_layout()
-    
+    fig1.tight_layout()
+
     fig.savefig("Trajectory.png")
+    fig1.savefig("Trajectory_smooth.png")
+    
     plt.close(fig)
+    plt.close(fig1)
