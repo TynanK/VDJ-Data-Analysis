@@ -88,7 +88,9 @@ if __name__ == "__main__":
     ax.set_xlim(0.0, 2.25)
     ax.set_ylim(0, 9)
 
-    ax.legend(loc = 'upper right')
+    # Summary plots have too much data to plot a legend. Disable the legend if the "all" flag was set
+    if colorFlag!=3:
+        ax.legend(loc = 'upper right')
     fig.tight_layout()
     
     fig.savefig("PDF_trajectory.png")
