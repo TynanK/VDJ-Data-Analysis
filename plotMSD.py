@@ -186,7 +186,7 @@ if __name__ == "__main__":
         #bottomLeftCell = table[2,0]   
 
     ax.legend(loc = 'lower right')
-    ax.set_ylim(0.03, 0.5)
+    ax.set_ylim(0.03, 0.3)
     fig.tight_layout()
     
     fig.savefig("MSD.png")
