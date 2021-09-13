@@ -86,7 +86,7 @@ if __name__ == "__main__":
     
     # Temporary, just for presentation
     ax.set_xlim(0.0, 2.25)
-    ax.set_ylim(0, 9)
+    ax.set_ylim(0, 6)
 
     # Summary plots have too much data to plot a legend. Disable the legend if the "all" flag was set
     if colorFlag!=3:
