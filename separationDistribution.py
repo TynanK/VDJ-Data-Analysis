@@ -22,11 +22,18 @@ import scipy.stats
 
 def singleTrajectoryAnalysis(filename, binCount):
     data = np.load(filename)
-
+    if '/' in filename:
+        directory, file = fiMa.splitDirFile(filename)
+        pdfFilename = directory + "PDF_" + file
+        binFilename = directory + "binCenters_" + file
+    else:
+        pdfFilename = "PDF_" + filename
+        binFilename = "binCenters_" + filename
+    
     PDF, binCenters = separationDistribution(data, binCount)
 
-    np.save("PDF_" + filename, PDF)
-    np.save("binCenters_" + filename, binCenters)
+    np.save(pdfFilename, PDF)
+    np.save(binFilename, binCenters)
     return PDF, binCenters
 
 

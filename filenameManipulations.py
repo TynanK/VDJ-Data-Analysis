@@ -53,3 +53,17 @@ def extractExtension(filename):
             extension = filename[i-a:]
             break
     return extension
+
+def splitDirFile(filename):
+    if '/' not in filename:
+        print("Error: mistakenly called splitDirFile on a file in current directory")
+        return "./", filename
+    else:
+        length = len(filename)
+        for a in range(length):
+            if filename[length-1-a] == '/':
+                slashIndex = length-1-a
+                break
+        directory = filename[0:slashIndex+1]
+        file = filename[slashIndex+1:]
+        return directory, file
